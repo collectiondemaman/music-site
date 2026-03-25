@@ -1,0 +1,44 @@
+[
+  {
+    "title": "数星星",
+    "category": "流行",
+    "audio": "audio/shuxingxing.mp3",
+    "lyrics": "lyrics/shuxingxing.txt",
+    "desc": ""
+  },
+  {
+    "title": "写给宝贝的歌",
+    "category": "流行",
+    "audio": "audio/xiegeibaobeidege.mp3",
+    "lyrics": "lyrics/xiegeibaobeidege.txt",
+    "desc": "这是一首写给宝贝的歌"
+  },
+  {
+    "title": "小城旧事",
+    "category": "民谣",
+    "audio": "audio/xiaochengjiushi.mp3",
+    "lyrics": "lyrics/xiaochengjiushi.txt",
+    "desc": ""
+  },
+  {
+    "title": "爱情的模样",
+    "category": "民谣",
+    "audio": "audio/aiqingdemoyang.mp3",
+    "lyrics": "lyrics/aiqingdemoyang.txt",
+    "desc": ""
+  },
+  {
+    "title": "尘与火",
+    "category": "摇滚",
+    "audio": "audio/chenyuhuo.mp3",
+    "lyrics": "lyrics/chenyuhuo.txt",
+    "desc": ""
+  },
+  {
+    "title": "致国足",
+    "category": "摇滚",
+    "audio": "audio/zhiguozu.mp3",
+    "lyrics": "lyrics/zhiguozu.txt",
+    "desc": ""
+  }
+]
