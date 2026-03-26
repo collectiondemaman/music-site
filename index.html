@@ -1,215 +1,380 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>迷遥 · 音乐网站</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>迷遥 · 音乐网站</title>
 
-<style>
-:root {
-  --bg:#000;
-  --panel:#111;
-  --panel-2:#181818;
-  --text:#f1d3a1;
-  --muted:#c8a97b;
-  --accent:#f07a1a;
-  --line:rgba(241,211,161,0.16);
-}
+  <style>
+    :root {
+      --bg: #000000;
+      --panel: #111111;
+      --panel-2: #181818;
+      --text: #f1d3a1;
+      --muted: #c8a97b;
+      --accent: #f07a1a;
+      --line: rgba(241, 211, 161, 0.16);
+    }
 
-body{
-  margin:0;
-  padding:24px 16px;
-  background:var(--bg);
-  color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-}
+    * {
+      box-sizing: border-box;
+    }
 
-.container{max-width:860px;margin:0 auto;}
+    body {
+      margin: 0;
+      padding: 24px 16px 48px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+    }
 
-.logo-wrap{text-align:center;margin-bottom:28px;}
-.logo{width:140px;margin-bottom:12px;}
-.title{font-size:28px;font-weight:700;}
-.subtitle{color:var(--muted);font-size:13px;}
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
 
-.filter{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin:20px 0;
-}
+    .header-mini {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding: 4px 0 2px;
+    }
 
-.filter button{
-  background:transparent;
-  border:1px solid var(--accent);
-  color:var(--accent);
-  padding:6px 12px;
-  border-radius:999px;
-  cursor:pointer;
-}
+    .header-logo {
+      width: 56px;
+      height: auto;
+      flex-shrink: 0;
+      display: block;
+    }
 
-.filter button.active{
-  background:var(--accent);
-  color:#000;
-}
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-width: 0;
+    }
 
-.song{
-  background:linear-gradient(180deg,var(--panel),var(--panel-2));
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:14px;
-  margin-bottom:14px;
-}
+    .brand {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
 
-.song-title{font-weight:700;margin-bottom:6px;}
-.song-desc{color:var(--muted);font-size:13px;margin-bottom:8px;}
+    .meta,
+    .contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
 
-audio{width:100%;margin:6px 0;}
+    .meta span,
+    .contact span {
+      white-space: nowrap;
+    }
 
-.lyric-btn{
-  border:1px solid var(--accent);
-  color:var(--accent);
-  background:transparent;
-  padding:5px 10px;
-  border-radius:999px;
-  cursor:pointer;
-}
+    .filter {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0 22px;
+    }
 
-.lyrics{
-  display:none;
-  margin-top:10px;
-  border-top:1px solid var(--line);
-  padding-top:10px;
-  white-space:pre-line;
-  color:var(--muted);
-}
+    .filter button {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
 
-.footer{text-align:center;margin-top:40px;font-size:12px;color:#888;}
-</style>
+    .filter button:hover {
+      background: rgba(240, 122, 26, 0.08);
+    }
+
+    .filter button.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .song {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .song-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .song-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 4px;
+      margin-bottom: 10px;
+    }
+
+    .lyric-btn {
+      display: inline-block;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .lyric-btn:hover {
+      background: rgba(240, 122, 26, 0.08);
+    }
+
+    .lyrics {
+      display: none;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      white-space: pre-line;
+      line-height: 1.8;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .footer {
+      text-align: center;
+      color: rgba(241, 211, 161, 0.55);
+      font-size: 12px;
+      margin-top: 36px;
+    }
+
+    .empty-tip {
+      color: var(--muted);
+      font-size: 14px;
+      padding: 18px 0;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 18px 12px 40px;
+      }
+
+      .header-mini {
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .header-logo {
+        width: 48px;
+      }
+
+      .brand {
+        font-size: 24px;
+        margin-bottom: 4px;
+      }
+
+      .meta,
+      .contact {
+        font-size: 12px;
+        gap: 4px 10px;
+      }
+
+      .meta span,
+      .contact span {
+        white-space: normal;
+      }
+
+      .song-title {
+        font-size: 17px;
+      }
+
+      .lyrics {
+        font-size: 13px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-<div class="container">
+  <div class="container">
 
-<div class="header-mini">
-  <img src="logo.png" class="header-logo">
-  <div class="header-text">
-    <div class="brand">迷遥</div>
-    <div class="meta">
-      <span>词曲作者：老湛</span>
-      <span>编曲 / 演唱：Suno AI</span>
+    <div class="header-mini">
+      <img src="logo.png" alt="迷遥 Logo" class="header-logo">
+      <div class="header-text">
+        <div class="brand">迷遥</div>
+        <div class="meta">
+          <span>词曲作者：老湛</span>
+          <span>编曲 / 演唱：Suno AI</span>
+        </div>
+        <div class="contact">
+          <span>微信：maitianjiao</span>
+          <span>邮箱：yimin.zhan8@gmail.com</span>
+        </div>
+      </div>
     </div>
-    <div class="contact">
-      <span>微信：maitianjiao</span>
-      <span>邮箱：yimin.zhan8@gmail.com</span>
-    </div>
+
+    <div class="filter" id="filter"></div>
+
+    <div id="song-list"></div>
+
+    <div class="footer">迷遥 · 音乐目录</div>
   </div>
-</div>
 
-<!-- 分类按钮 -->
-<div class="filter" id="filter"></div>
+  <script>
+    let allSongs = [];
+    let currentCategory = "全部";
+    const loadedLyrics = {};
 
-<!-- 歌单 -->
-<div id="song-list"></div>
-
-<div class="footer">迷遥 · 音乐目录</div>
-
-</div>
-
-<script>
-let allSongs = [];
-let currentCategory = "全部";
-let loadedLyrics = {}; // 缓存歌词
-
-// 加载歌曲数据
-fetch("data/songs.json")
-.then(res=>res.json())
-.then(data=>{
-  allSongs = data;
-  initCategories();
-  renderSongs();
-});
-
-// 分类按钮
-function initCategories(){
-  const categories = ["全部", ...new Set(allSongs.map(s=>s.category))];
-  const filter = document.getElementById("filter");
-
-  categories.forEach(cat=>{
-    const btn = document.createElement("button");
-    btn.textContent = cat;
-    if(cat==="全部") btn.classList.add("active");
-
-    btn.onclick=()=>{
-      currentCategory = cat;
-      document.querySelectorAll(".filter button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      renderSongs();
-    };
-
-    filter.appendChild(btn);
-  });
-}
-
-// 渲染歌曲
-function renderSongs(){
-  const list = document.getElementById("song-list");
-  list.innerHTML = "";
-
-  const songs = currentCategory==="全部"
-    ? allSongs
-    : allSongs.filter(s=>s.category===currentCategory);
-
-  songs.forEach(song=>{
-    const div = document.createElement("div");
-    div.className="song";
-
-    div.innerHTML = `
-      <div class="song-title">${song.title}</div>
-      ${song.desc ? `<div class="song-desc">${song.desc}</div>` : ""}
-      <audio controls preload="none">
-        <source src="${song.audio}" type="audio/mpeg">
-      </audio>
-      <button class="lyric-btn">查看歌词</button>
-      <div class="lyrics"></div>
-    `;
-
-    const btn = div.querySelector(".lyric-btn");
-    const lyricsDiv = div.querySelector(".lyrics");
-    const audio = div.querySelector("audio");
-
-    // 播放器互斥
-    audio.addEventListener("play",()=>{
-      document.querySelectorAll("audio").forEach(a=>{
-        if(a!==audio){a.pause();a.currentTime=0;}
+    fetch("data/songs.json")
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("songs.json 加载失败");
+        }
+        return res.json();
+      })
+      .then(data => {
+        allSongs = data;
+        initCategories();
+        renderSongs();
+      })
+      .catch(err => {
+        document.getElementById("song-list").innerHTML =
+          '<div class="empty-tip">歌曲数据加载失败，请检查 data/songs.json 路径或格式。</div>';
+        console.error(err);
       });
-    });
 
-    // 点击歌词
-    btn.onclick = async ()=>{
-      const isOpen = lyricsDiv.style.display==="block";
+    function initCategories() {
+      const categories = ["全部", ...new Set(allSongs.map(song => song.category))];
+      const filter = document.getElementById("filter");
+      filter.innerHTML = "";
 
-      document.querySelectorAll(".lyrics").forEach(l=>l.style.display="none");
-      document.querySelectorAll(".lyric-btn").forEach(b=>b.textContent="查看歌词");
+      categories.forEach(category => {
+        const btn = document.createElement("button");
+        btn.textContent = category;
 
-      if(!isOpen){
-        lyricsDiv.style.display="block";
-        btn.textContent="收起歌词";
-
-        if(!loadedLyrics[song.lyrics]){
-          lyricsDiv.textContent = "加载中...";
-          const res = await fetch(song.lyrics);
-          const text = await res.text();
-          loadedLyrics[song.lyrics] = text;
+        if (category === "全部") {
+          btn.classList.add("active");
         }
 
-        lyricsDiv.textContent = loadedLyrics[song.lyrics];
+        btn.addEventListener("click", () => {
+          currentCategory = category;
+          document.querySelectorAll(".filter button").forEach(button => {
+            button.classList.remove("active");
+          });
+          btn.classList.add("active");
+          renderSongs();
+        });
+
+        filter.appendChild(btn);
+      });
+    }
+
+    function renderSongs() {
+      const list = document.getElementById("song-list");
+      list.innerHTML = "";
+
+      const songsToRender = currentCategory === "全部"
+        ? allSongs
+        : allSongs.filter(song => song.category === currentCategory);
+
+      if (!songsToRender.length) {
+        list.innerHTML = '<div class="empty-tip">这个分类下暂时还没有歌曲。</div>';
+        return;
       }
-    };
 
-    list.appendChild(div);
-  });
-}
-</script>
+      songsToRender.forEach(song => {
+        const card = document.createElement("div");
+        card.className = "song";
 
+        card.innerHTML = `
+          <div class="song-title">${escapeHtml(song.title || "")}</div>
+          ${song.desc ? `<div class="song-desc">${escapeHtml(song.desc)}</div>` : ""}
+          <audio controls preload="none">
+            <source src="${song.audio}" type="audio/mpeg">
+            你的浏览器不支持音频播放。
+          </audio>
+          <button class="lyric-btn" type="button">查看歌词</button>
+          <div class="lyrics"></div>
+        `;
+
+        const audio = card.querySelector("audio");
+        const lyricBtn = card.querySelector(".lyric-btn");
+        const lyricsBox = card.querySelector(".lyrics");
+
+        audio.addEventListener("play", () => {
+          document.querySelectorAll("audio").forEach(other => {
+            if (other !== audio) {
+              other.pause();
+              other.currentTime = 0;
+            }
+          });
+        });
+
+        lyricBtn.addEventListener("click", async () => {
+          const isOpen = lyricsBox.style.display === "block";
+
+          document.querySelectorAll(".lyrics").forEach(box => {
+            box.style.display = "none";
+          });
+
+          document.querySelectorAll(".lyric-btn").forEach(btn => {
+            btn.textContent = "查看歌词";
+          });
+
+          if (!isOpen) {
+            lyricsBox.style.display = "block";
+            lyricBtn.textContent = "收起歌词";
+
+            if (!loadedLyrics[song.lyrics]) {
+              lyricsBox.textContent = "加载中...";
+              try {
+                const response = await fetch(song.lyrics);
+                if (!response.ok) {
+                  throw new Error("歌词加载失败");
+                }
+                const text = await response.text();
+                loadedLyrics[song.lyrics] = text;
+              } catch (error) {
+                loadedLyrics[song.lyrics] = "歌词加载失败，请检查 lyrics 文件路径。";
+                console.error(error);
+              }
+            }
+
+            lyricsBox.textContent = loadedLyrics[song.lyrics];
+          }
+        });
+
+        list.appendChild(card);
+      });
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+  </script>
 </body>
 </html>
