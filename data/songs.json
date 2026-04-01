@@ -1,5 +1,13 @@
 [
   {
+    "title": "他们都说",
+    "category": "摇滚",
+    "audio": "audio/tamendoushuo.mp3",
+    "lyrics": "lyrics/tamendoushuo.txt",
+    "desc": "",
+    "weight": 80
+  },
+  {
     "title": "猜",
     "category": "小清新",
     "audio": "audio/cai.mp3",
