@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>迷遥 · 音乐网站</title>
+
+<style>
+:root {
+  --bg:#000;
+  --panel:#111;
+  --panel-2:#181818;
+  --text:#f1d3a1;
+  --muted:#c8a97b;
+  --accent:#f07a1a;
+  --line:rgba(241,211,161,0.16);
+}
+
+body{
+  margin:0;
+  padding:24px 16px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+
+.container{
+  max-width:860px;
+  margin:0 auto;
+}
+
+.logo-wrap{
+  text-align:center;
+  margin-bottom:28px;
+}
+
+.logo{
+  width:140px;
+  margin-bottom:12px;
+}
+
+.title{
+  font-size:28px;
+  font-weight:700;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.filter{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+.filter button{
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.filter button.active{
+  background:var(--accent);
+  color:#000;
+}
+
+.song{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.song-title{
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.song-desc{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+audio{
+  width:100%;
+  margin:6px 0;
+}
+
+.lyric-btn{
+  border:1px solid var(--accent);
+  color:var(--accent);
+  background:transparent;
+  padding:5px 10px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.lyrics{
+  display:none;
+  margin-top:10px;
+  border-top:1px solid var(--line);
+  padding-top:10px;
+  white-space:pre-line;
+  color:var(--muted);
+}
+
+.error-box{
+  color:#ff9c9c;
+  line-height:1.7;
+  padding:16px;
+  border:1px solid rgba(255,156,156,0.3);
+  border-radius:12px;
+  background:rgba(255,80,80,0.06);
+}
+
+.footer{
+  text-align:center;
+  margin-top:40px;
+  font-size:12px;
+  color:#888;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="logo-wrap">
+    <img src="logo.png" class="logo" alt="迷遥logo">
+    <div class="title">迷遥</div>
+    <div class="subtitle">老湛 · AI独立音乐</div>
+  </div>
+
+  <div class="filter" id="filter"></div>
+
+  <div id="song-list"></div>
+
+  <div class="footer">迷遥 · 音乐目录</div>
+
+</div>
+
+<script>
+let allSongs = [];
+let currentCategory = "全部";
+let loadedLyrics = {};
+
+const DATA_URL = "./data/songs.json?v=20260402-final";
+const CACHE_VERSION = "20260402-final";
+
+async function loadSongs() {
+  const list = document.getElementById("song-list");
+
+  try {
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error("songs.json 请求失败，HTTP " + res.status);
+    }
+
+    const raw = await res.text();
+
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (e) {
+      console.error("songs.json 原始内容：", raw);
+      throw new Error("songs.json 不是合法 JSON，请检查逗号、引号或隐藏字符");
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error("songs.json 格式不正确，根结构必须是数组");
+    }
+
+    allSongs = data
+      .slice()
+      .sort((a, b) => (b.weight || 0) - (a.weight || 0));
+
+    initCategories();
+    renderSongs();
+  } catch (err) {
+    console.error("歌曲数据加载失败：", err);
+    list.innerHTML = `
+      <div class="error-box">
+        歌曲数据加载失败：${err.message}<br>
+        请检查 data/songs.json 路径、JSON 格式，或浏览器缓存。
+      </div>
+    `;
+  }
+}
+
+function initCategories() {
+  const categories = ["全部", ...new Set(allSongs.map(song => song.category).filter(Boolean))];
+  const filter = document.getElementById("filter");
+  filter.innerHTML = "";
+
+  categories.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+
+    if (cat === currentCategory) {
+      btn.classList.add("active");
+    }
+
+    btn.onclick = () => {
+      currentCategory = cat;
+      document.querySelectorAll(".filter button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderSongs();
+    };
+
+    filter.appendChild(btn);
+  });
+}
+
+function renderSongs() {
+  const list = document.getElementById("song-list");
+  list.innerHTML = "";
+
+  const songs = currentCategory === "全部"
+    ? allSongs
+    : allSongs.filter(song => song.category === currentCategory);
+
+  if (!songs.length) {
+    list.innerHTML = `<div class="error-box">当前分类下暂无歌曲。</div>`;
+    return;
+  }
+
+  songs.forEach(song => {
+    const div = document.createElement("div");
+    div.className = "song";
+
+    const safeTitle = song.title || "未命名歌曲";
+    const safeDesc = song.desc || "";
+    const safeAudio = song.audio || "";
+    const safeLyrics = song.lyrics || "";
+
+    div.innerHTML = `
+      <div class="song-title">${safeTitle}</div>
+      ${safeDesc ? `<div class="song-desc">${safeDesc}</div>` : ""}
+      <audio controls preload="none">
+        <source src="${safeAudio}" type="audio/mpeg">
+        您的浏览器不支持 audio 标签
+      </audio>
+      <button class="lyric-btn">查看歌词</button>
+      <div class="lyrics"></div>
+    `;
+
+    const btn = div.querySelector(".lyric-btn");
+    const lyricsDiv = div.querySelector(".lyrics");
+    const audio = div.querySelector("audio");
+
+    audio.addEventListener("play", () => {
+      document.querySelectorAll("audio").forEach(a => {
+        if (a !== audio) {
+          a.pause();
+          a.currentTime = 0;
+        }
+      });
+    });
+
+    btn.onclick = async () => {
+      const isOpen = lyricsDiv.style.display === "block";
+
+      document.querySelectorAll(".lyrics").forEach(l => {
+        l.style.display = "none";
+      });
+      document.querySelectorAll(".lyric-btn").forEach(b => {
+        b.textContent = "查看歌词";
+      });
+
+      if (!isOpen) {
+        lyricsDiv.style.display = "block";
+        btn.textContent = "收起歌词";
+
+        if (!safeLyrics) {
+          lyricsDiv.textContent = "未设置歌词文件。";
+          return;
+        }
+
+        if (!loadedLyrics[safeLyrics]) {
+          lyricsDiv.textContent = "加载中...";
+
+          try {
+            const res = await fetch(`${safeLyrics}?v=${CACHE_VERSION}`, { cache: "no-store" });
+
+            if (!res.ok) {
+              throw new Error("HTTP " + res.status);
+            }
+
+            const text = await res.text();
+            loadedLyrics[safeLyrics] = text;
+          } catch (err) {
+            lyricsDiv.textContent = "歌词加载失败：" + err.message;
+            return;
+          }
+        }
+
+        lyricsDiv.textContent = loadedLyrics[safeLyrics];
+      }
+    };
+
+    list.appendChild(div);
+  });
+}
+
+loadSongs();
+</script>
+
+</body>
+</html>
