@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>老湛 · 音乐网站</title>
+
+<style>
+:root {
+  --bg:#000;
+  --panel:#111;
+  --panel-2:#181818;
+  --text:#f1d3a1;
+  --muted:#c8a97b;
+  --accent:#f07a1a;
+  --line:rgba(241,211,161,0.16);
+}
+
+body{
+  margin:0;
+  padding:24px 16px;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+}
+
+.container{
+  max-width:860px;
+  margin:0 auto;
+}
+
+/* ===== 头部（优化版） ===== */
+.logo-wrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:18px;
+  margin-bottom:32px;
+}
+
+.logo{
+  width:64px;
+  height:auto;
+  display:block;
+  flex-shrink:0;
+  filter:drop-shadow(0 0 6px rgba(240,122,26,0.4));
+}
+
+.header-text{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  text-align:left;
+  line-height:1.5;
+}
+
+.title{
+  font-size:26px;
+  font-weight:700;
+  letter-spacing:1px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.contact{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* ===== 分类 ===== */
+.filter{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+.filter button{
+  background:transparent;
+  border:1px solid var(--accent);
+  color:var(--accent);
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.filter button.active{
+  background:var(--accent);
+  color:#000;
+}
+
+/* ===== 歌曲卡片 ===== */
+.song{
+  background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:14px;
+}
+
+.song-title{
+  font-weight:700;
+  margin-bottom:6px;
+}
+
+.song-desc{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+audio{
+  width:100%;
+  margin:6px 0;
+}
+
+.audio-error{
+  color:#ff9c9c;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.lyric-btn{
+  border:1px solid var(--accent);
+  color:var(--accent);
+  background:transparent;
+  padding:5px 10px;
+  border-radius:999px;
+  cursor:pointer;
+  margin-top:8px;
+}
+
+.lyrics{
+  display:none;
+  margin-top:10px;
+  border-top:1px solid var(--line);
+  padding-top:10px;
+  white-space:pre-line;
+  color:var(--muted);
+}
+
+.error-box{
+  color:#ff9c9c;
+  line-height:1.7;
+  padding:16px;
+  border:1px solid rgba(255,156,156,0.3);
+  border-radius:12px;
+  background:rgba(255,80,80,0.06);
+}
+
+.footer{
+  text-align:center;
+  margin-top:40px;
+  font-size:12px;
+  color:#888;
+}
+
+/* ===== 手机优化 ===== */
+@media (max-width:640px){
+  .logo{
+    width:52px;
+  }
+
+  .title{
+    font-size:22px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="logo-wrap">
+    <img src="logo.png" class="logo" alt="logo">
+    <div class="header-text">
+      <div class="title">老湛</div>
+      <div class="subtitle">词曲作者</div>
+      <div class="contact">微信：maitianjiao</div>
+      <div class="contact">邮箱：yimin.zhan8@gmail.com</div>
+    </div>
+  </div>
+
+  <div class="filter" id="filter"></div>
+  <div id="song-list"></div>
+
+  <div class="footer">老湛 · 音乐目录</div>
+
+</div>
+
+<script>
+let allSongs = [];
+let currentCategory = "全部";
+let loadedLyrics = {};
+
+const DATA_URL = "./data/songs.json?v=final2";
+const CACHE_VERSION = "final2";
+
+async function loadSongs() {
+  const list = document.getElementById("song-list");
+
+  try {
+    const res = await fetch(DATA_URL, { cache: "no-store" });
+
+    if (!res.ok) {
+      throw new Error("HTTP " + res.status);
+    }
+
+    const data = await res.json();
+
+    allSongs = data.sort((a,b)=>(b.weight||0)-(a.weight||0));
+
+    initCategories();
+    renderSongs();
+  } catch (err) {
+    list.innerHTML = `<div class="error-box">歌曲加载失败：${err.message}</div>`;
+  }
+}
+
+function initCategories() {
+  const categories = ["全部", ...new Set(allSongs.map(s=>s.category))];
+  const filter = document.getElementById("filter");
+  filter.innerHTML = "";
+
+  categories.forEach(cat=>{
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+    if(cat===currentCategory) btn.classList.add("active");
+
+    btn.onclick=()=>{
+      currentCategory = cat;
+      document.querySelectorAll(".filter button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      renderSongs();
+    };
+
+    filter.appendChild(btn);
+  });
+}
+
+function renderSongs(){
+  const list = document.getElementById("song-list");
+  list.innerHTML = "";
+
+  const songs = currentCategory==="全部"
+    ? allSongs
+    : allSongs.filter(s=>s.category===currentCategory);
+
+  songs.forEach(song=>{
+    const div = document.createElement("div");
+    div.className="song";
+
+    div.innerHTML = `
+      <div class="song-title">${song.title}</div>
+      ${song.desc ? `<div class="song-desc">${song.desc}</div>` : ""}
+      <audio controls preload="none">
+        <source src="${song.audio}?v=${CACHE_VERSION}" type="audio/mpeg">
+      </audio>
+      <div class="audio-error"></div>
+      <button class="lyric-btn">查看歌词</button>
+      <div class="lyrics"></div>
+    `;
+
+    const audio = div.querySelector("audio");
+    const errorDiv = div.querySelector(".audio-error");
+    const btn = div.querySelector(".lyric-btn");
+    const lyricsDiv = div.querySelector(".lyrics");
+
+    audio.addEventListener("error",()=>{
+      errorDiv.textContent="音频加载失败："+song.audio;
+    });
+
+    audio.addEventListener("play",()=>{
+      document.querySelectorAll("audio").forEach(a=>{
+        if(a!==audio){a.pause();a.currentTime=0;}
+      });
+    });
+
+    btn.onclick = async ()=>{
+      const isOpen = lyricsDiv.style.display==="block";
+
+      document.querySelectorAll(".lyrics").forEach(l=>l.style.display="none");
+      document.querySelectorAll(".lyric-btn").forEach(b=>b.textContent="查看歌词");
+
+      if(!isOpen){
+        lyricsDiv.style.display="block";
+        btn.textContent="收起歌词";
+
+        if(!loadedLyrics[song.lyrics]){
+          const res = await fetch(song.lyrics);
+          loadedLyrics[song.lyrics] = await res.text();
+        }
+
+        lyricsDiv.textContent = loadedLyrics[song.lyrics];
+      }
+    };
+
+    list.appendChild(div);
+  });
+}
+
+loadSongs();
+</script>
+
+</body>
+</html>
