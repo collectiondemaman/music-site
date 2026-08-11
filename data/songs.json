@@ -7,8 +7,7 @@
     "desc": "",
     "weight": 80
   },
- 
-    {
+  {
     "title": "沙丘",
     "category": "摇滚",
     "audio": "audio/shaqiu.mp3",
@@ -16,8 +15,7 @@
     "desc": "",
     "weight": 85
   },
-  
-    {
+  {
     "title": "下沉",
     "category": "摇滚",
     "audio": "audio/xiachen.mp3",
@@ -120,5 +118,22 @@
     "lyrics": "lyrics/aiqingdemoyang.txt",
     "desc": "",
     "weight": 89
+  },
+  {
+    "title": "白马",
+    "category": "民谣",
+    "audio": "audio/baima.mp3",
+    "lyrics": "lyrics/baima.txt",
+    "desc": "",
+    "weight": 82
+  },
+  {
+    "title": "空有",
+    "category": "摇滚",
+    "audio": "audio/kongyou.mp3",
+    "lyrics": "lyrics/kongyou.txt",
+    "desc": "",
+    "weight": 85,
+    "start_sec": 20
   }
 ]
