@@ -106,30 +106,6 @@ body{
   margin-bottom:6px;
 }
 
-.song-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  margin-bottom:6px;
-}
-
-.song-head .song-title{
-  margin-bottom:0;
-  min-width:0;
-}
-
-.song-category{
-  flex-shrink:0;
-  border:1px solid var(--accent);
-  color:var(--accent);
-  padding:3px 9px;
-  border-radius:999px;
-  font-size:12px;
-  line-height:1.4;
-  white-space:nowrap;
-}
-
 .song-desc{
   color:var(--muted);
   font-size:13px;
@@ -278,10 +254,7 @@ function renderSongs(){
     div.className="song";
 
     div.innerHTML = `
-      <div class="song-head">
-        <div class="song-title">${song.title}</div>
-        ${song.category ? `<div class="song-category">${song.category}</div>` : ""}
-      </div>
+      <div class="song-title">${song.title}</div>
       ${song.desc ? `<div class="song-desc">${song.desc}</div>` : ""}
       <audio controls preload="none">
         <source src="${song.audio}?v=${CACHE_VERSION}" type="audio/mpeg">
