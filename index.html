@@ -147,7 +147,8 @@ audio{
   margin-top:4px;
 }
 
-.lyric-btn{
+.lyric-btn,
+.skip-intro-btn{
   border:1px solid var(--accent);
   color:var(--accent);
   background:transparent;
@@ -155,6 +156,10 @@ audio{
   border-radius:999px;
   cursor:pointer;
   margin-top:8px;
+}
+
+.skip-intro-btn{
+  margin-left:8px;
 }
 
 .lyrics{
@@ -288,12 +293,14 @@ function renderSongs(){
       </audio>
       <div class="audio-error"></div>
       <button class="lyric-btn">查看歌词</button>
+      ${Number(song.start_sec) > 0 ? `<button class="skip-intro-btn">跳过前奏</button>` : ""}
       <div class="lyrics"></div>
     `;
 
     const audio = div.querySelector("audio");
     const errorDiv = div.querySelector(".audio-error");
     const btn = div.querySelector(".lyric-btn");
+    const skipIntroBtn = div.querySelector(".skip-intro-btn");
     const lyricsDiv = div.querySelector(".lyrics");
 
     audio.addEventListener("error",()=>{
@@ -305,6 +312,40 @@ function renderSongs(){
         if(a!==audio){a.pause();a.currentTime=0;}
       });
     });
+
+    if(skipIntroBtn){
+      skipIntroBtn.onclick = async ()=>{
+        const startSec = Number(song.start_sec) || 0;
+
+        try{
+          if(audio.readyState < 1){
+            await new Promise((resolve, reject)=>{
+              const onLoaded = ()=>{
+                cleanup();
+                resolve();
+              };
+              const onError = ()=>{
+                cleanup();
+                reject(new Error("音频加载失败"));
+              };
+              const cleanup = ()=>{
+                audio.removeEventListener("loadedmetadata", onLoaded);
+                audio.removeEventListener("error", onError);
+              };
+
+              audio.addEventListener("loadedmetadata", onLoaded);
+              audio.addEventListener("error", onError);
+              audio.load();
+            });
+          }
+
+          audio.currentTime = startSec;
+          await audio.play();
+        }catch(err){
+          errorDiv.textContent = "无法跳过前奏：" + err.message;
+        }
+      };
+    }
 
     btn.onclick = async ()=>{
       const isOpen = lyricsDiv.style.display==="block";

@@ -93,7 +93,7 @@
     "audio": "audio/shuxingxing.mp3",
     "lyrics": "lyrics/shuxingxing.txt",
     "desc": "",
-    "weight": 89
+    "weight": 70
   },
   {
     "title": "写给宝贝的歌",
@@ -101,7 +101,7 @@
     "audio": "audio/xiegeibaobeidege.mp3",
     "lyrics": "lyrics/xiegeibaobeidege.txt",
     "desc": "这是一首写给宝贝的歌",
-    "weight": 90
+    "weight": 75
   },
   {
     "title": "小城旧事",
@@ -135,5 +135,23 @@
     "desc": "",
     "weight": 85,
     "start_sec": 20
+  },
+  {
+    "title": "当我又",
+    "category": "民谣",
+    "audio": "audio/dangwoyou.mp3",
+    "lyrics": "lyrics/dangwoyou.txt",
+    "desc": "",
+    "weight": 85,
+    "start_sec": 17
+  },
+  {
+    "title": "日出之前相爱",
+    "category": "民谣",
+    "audio": "audio/richuzhiqianxiangai.mp3",
+    "lyrics": "lyrics/richuzhiqianxiangai.txt",
+    "desc": "",
+    "weight": 85,
+    "start_sec": 15
   }
 ]
