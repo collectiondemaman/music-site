@@ -6,6 +6,7 @@
     "lyrics": "lyrics/tamendoushuo.txt",
     "desc": "",
     "weight": 80
+	"start_sec": 16
   },
   {
     "title": "沙丘",
@@ -14,6 +15,7 @@
     "lyrics": "lyrics/shaqiu.txt",
     "desc": "",
     "weight": 85
+	"start_sec": 18
   },
   {
     "title": "下沉",
@@ -22,6 +24,7 @@
     "lyrics": "lyrics/xiachen.txt",
     "desc": "",
     "weight": 85
+	"start_sec": 28
   },
   {
     "title": "猜",
@@ -30,6 +33,7 @@
     "lyrics": "lyrics/cai.txt",
     "desc": "",
     "weight": 90
+	"start_sec": 12
   },
   {
     "title": "给爸爸的歌",
@@ -38,6 +42,7 @@
     "lyrics": "lyrics/geibabadege.txt",
     "desc": "",
     "weight": 100
+	"start_sec": 13
   },
   {
     "title": "原地爆炸",
@@ -46,6 +51,7 @@
     "lyrics": "lyrics/yuandibaozha.txt",
     "desc": "",
     "weight": 70
+	"start_sec": 8
   },
   {
     "title": "带刺的玫瑰",
@@ -54,6 +60,7 @@
     "lyrics": "lyrics/daicidemeigui.txt",
     "desc": "",
     "weight": 90
+	"start_sec": 20
   },
   {
     "title": "风雨雷电",
@@ -62,14 +69,16 @@
     "lyrics": "lyrics/fengyuleidian.txt",
     "desc": "",
     "weight": 90
+	"start_sec": 24
   },
   {
     "title": "玫瑰色的房间",
-    "category": "摇滚",
+    "category": "迷幻",
     "audio": "audio/meiguisedefangjian.mp3",
     "lyrics": "lyrics/meiguisedefangjian.txt",
     "desc": "",
     "weight": 90
+	"start_sec": 13
   },
   {
     "title": "尘与火",
@@ -78,6 +87,7 @@
     "lyrics": "lyrics/chenyuhuo.txt",
     "desc": "",
     "weight": 88
+	"start_sec": 30
   },
   {
     "title": "致国足",
@@ -86,6 +96,7 @@
     "lyrics": "lyrics/zhiguozu.txt",
     "desc": "",
     "weight": 75
+	"start_sec": 19
   },
   {
     "title": "数星星",
@@ -94,6 +105,7 @@
     "lyrics": "lyrics/shuxingxing.txt",
     "desc": "",
     "weight": 70
+	"start_sec": 12
   },
   {
     "title": "写给宝贝的歌",
@@ -102,6 +114,7 @@
     "lyrics": "lyrics/xiegeibaobeidege.txt",
     "desc": "这是一首写给宝贝的歌",
     "weight": 75
+	"start_sec": 14
   },
   {
     "title": "小城旧事",
@@ -110,6 +123,7 @@
     "lyrics": "lyrics/xiaochengjiushi.txt",
     "desc": "",
     "weight": 80
+	"start_sec": 17
   },
   {
     "title": "爱情的模样",
@@ -118,6 +132,7 @@
     "lyrics": "lyrics/aiqingdemoyang.txt",
     "desc": "",
     "weight": 89
+	"start_sec": 26
   },
   {
     "title": "白马",
@@ -126,6 +141,7 @@
     "lyrics": "lyrics/baima.txt",
     "desc": "",
     "weight": 82
+	"start_sec": 24
   },
   {
     "title": "空有",
