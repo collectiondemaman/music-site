@@ -60,8 +60,15 @@
     .song-title { margin: 0; color: #fff7eb; font-size: 18px; font-weight: 700; }
     .category { color: var(--gold); font-size: 13px; white-space: nowrap; }
     .description { margin: -2px 0 6px; color: var(--muted); font-size: 12px; }
-    .play-area { display: block; }
-    audio { width: 100%; min-width: 0; height: 46px; accent-color: var(--orange); }
+    .play-area { display: flex; align-items: center; gap: 9px; }
+    .big-play {
+      flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center;
+      border: 2px solid var(--orange); border-radius: 50%; color: var(--orange);
+      background: rgba(240,120,34,.08); cursor: pointer; font-size: 20px; line-height: 1;
+    }
+    .big-play:hover, .big-play:focus-visible { color: #160c05; background: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(240,120,34,.15); }
+    .big-play .play-icon { transform: translateX(1px); }
+    audio { width: 100%; min-width: 0; height: 38px; accent-color: var(--orange); }
     .control-actions, .secondary-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
     .control-actions { margin-right: 6px; padding-left: 53px; }
     .secondary-actions { padding-top: 0; border-top: 0; }
@@ -78,31 +85,30 @@
     .share-close { width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: transparent; cursor: pointer; font-size: 22px; }
     .share-song { margin: 12px 0 5px; color: #fff7eb; font-weight: 700; }
     .share-note { margin: 0 0 17px; color: var(--muted); font-size: 13px; }
-    .share-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .share-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .share-action { min-height: 46px; border: 1px solid var(--orange); border-radius: 10px; color: #170c04; background: var(--orange); cursor: pointer; font-weight: 700; }
     .share-action.copy { color: var(--gold); border-color: var(--line); background: transparent; }
     .share-tip { display: none; margin: 15px 0 0; padding: 11px 13px; color: #e7c590; border-radius: 8px; background: rgba(240,120,34,.1); font-size: 13px; }
     .share-tip.show { display: block; }
     .now-playing {
-      position: fixed; z-index: 20; left: 50%; top: 10px; transform: translate(-50%, calc(-100% - 30px));
+      position: fixed; z-index: 20; left: 50%; bottom: 14px; transform: translate(-50%, calc(100% + 30px));
       width: min(620px, calc(100% - 24px)); display: flex; align-items: center; gap: 12px;
-      padding: 8px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 10px;
-      background: rgba(38,38,38,.97); box-shadow: 0 8px 28px rgba(0,0,0,.48);
+      padding: 10px 12px; border: 1px solid rgba(240,120,34,.65); border-radius: 14px;
+      background: rgba(20,14,9,.96); box-shadow: 0 12px 35px rgba(0,0,0,.55), 0 0 18px rgba(240,120,34,.1);
       opacity: 0; visibility: hidden; transition: transform .25s ease, opacity .25s ease, visibility .25s;
       backdrop-filter: blur(10px);
     }
     .now-playing.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
-    .now-toggle, .now-close {
-      flex: 0 0 36px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
-      border: 1px solid rgba(255,255,255,.22); border-radius: 8px; color: #eee; background: rgba(255,255,255,.08);
-      cursor: pointer; font-size: 15px;
+    .now-toggle {
+      flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; padding: 0;
+      border: 2px solid var(--orange); border-radius: 50%; color: var(--orange); background: rgba(240,120,34,.08);
+      cursor: pointer; font-size: 17px;
     }
-    .now-toggle:hover, .now-toggle:focus-visible, .now-close:hover, .now-close:focus-visible { background: rgba(255,255,255,.17); outline: none; }
-    .now-close { flex-basis: 32px; width: 32px; height: 32px; border: 0; background: transparent; color: #aaa; font-size: 20px; }
+    .now-toggle:hover, .now-toggle:focus-visible { color: #160c05; background: var(--orange); outline: none; }
     .now-info { min-width: 0; flex: 1; }
     .now-label { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
     .now-title { display: block; width: 100%; padding: 0; border: 0; color: #fff4e5; background: transparent; cursor: pointer; text-align: left; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .now-title:hover { color: #fff; text-decoration: underline; }
+    .now-title:hover { color: var(--orange); }
 
     .copyright { margin: 22px 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 11px; background: rgba(217,164,65,.035); }
     .copyright h2 { display: inline; margin: 0 6px 0 0; color: var(--gold); font-size: 12px; }
@@ -113,6 +119,7 @@
       header { padding: 13px 0 11px; }
       .header-details { gap: 1px 10px; }
       .song-card { padding: 10px 11px; }
+      .play-area { align-items: flex-start; }
       audio { margin-top: 3px; }
       .control-actions { padding-left: 0; }
       .share-actions { grid-template-columns: 1fr; }
@@ -150,7 +157,6 @@
       <span class="now-label" id="nowLabel">正在播放</span>
       <button class="now-title" id="nowTitle" type="button"></button>
     </div>
-    <button class="now-close" id="nowClose" type="button" aria-label="关闭正在播放提示">×</button>
   </aside>
 
   <dialog class="share-dialog" id="shareDialog" aria-labelledby="shareTitle">
@@ -160,8 +166,9 @@
         <button class="share-close" type="button" aria-label="关闭分享窗口">×</button>
       </div>
       <p class="share-song" id="shareSong"></p>
-      <p class="share-note">复制这首歌的专属链接，对方打开后会直接定位到该作品。</p>
+      <p class="share-note">分享的是这首歌的专属链接，对方打开后会直接定位到该作品。</p>
       <div class="share-actions">
+        <button class="share-action wechat-share" type="button">分享到微信</button>
         <button class="share-action copy" type="button">复制单曲链接</button>
       </div>
       <p class="share-tip" id="shareTip" role="status"></p>
@@ -181,13 +188,11 @@
     const nowToggleEl = document.querySelector('#nowToggle');
     const nowTitleEl = document.querySelector('#nowTitle');
     const nowLabelEl = document.querySelector('#nowLabel');
-    const nowCloseEl = document.querySelector('#nowClose');
     let songs = [];
     let activeCategory = '全部';
     let shareData = null;
     let currentAudio = null;
     let currentCard = null;
-    let nowDismissed = false;
 
     const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -217,6 +222,25 @@
       shareTipEl.classList.add('show');
     }
 
+    async function shareToWechat() {
+      if (!shareData) return;
+      const inWechat = /MicroMessenger/i.test(navigator.userAgent);
+      if (inWechat) {
+        shareTipEl.textContent = '请点击微信右上角“…”菜单，再选择“发送给朋友”或“分享到朋友圈”。';
+        shareTipEl.classList.add('show');
+        return;
+      }
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: shareData.title, text: shareData.text, url: shareData.url });
+          return;
+        } catch (error) {
+          if (error.name === 'AbortError') return;
+        }
+      }
+      await copyShareLink();
+    }
+
     function openShare(song) {
       shareData = {
         title: `《${song.title}》｜老湛原创词曲`,
@@ -235,10 +259,15 @@
       });
     }
 
-    function syncPlayerState(audio, card) {
+    function syncPlayerState(audio, card, button) {
       const playing = !audio.paused && !audio.ended;
       nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
       card.classList.toggle('is-playing', playing);
+      button.setAttribute('aria-label', playing ? '暂停' : '播放');
+      button.setAttribute('title', playing ? '暂停' : '播放');
+      button.innerHTML = playing
+        ? '<span aria-hidden="true">Ⅱ</span>'
+        : '<span class="play-icon" aria-hidden="true">▶</span>';
     }
 
     function updateNowPlaying(audio, card, song) {
@@ -248,7 +277,7 @@
       nowTitleEl.textContent = `《${song.title}》`;
       nowToggleEl.textContent = playing ? 'Ⅱ' : '▶';
       nowToggleEl.setAttribute('aria-label', playing ? '暂停' : '继续播放');
-      nowPlayingEl.classList.toggle('show', !audio.ended && !nowDismissed);
+      nowPlayingEl.classList.toggle('show', !audio.ended);
     }
 
     function buildCard(song) {
@@ -264,6 +293,7 @@
         </div>
         ${song.desc ? `<p class="description">${escapeHtml(song.desc)}</p>` : ''}
         <div class="play-area">
+          <button class="big-play" type="button" aria-label="播放" title="播放"><span class="play-icon" aria-hidden="true">▶</span></button>
           <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
         </div>
         ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏</button></div>` : ''}
@@ -271,18 +301,19 @@
         <div class="lyrics" aria-live="polite"></div>`;
 
       const audio = card.querySelector('audio');
+      const playButton = card.querySelector('.big-play');
+      playButton.addEventListener('click', () => audio.paused ? audio.play() : audio.pause());
       audio.addEventListener('play', () => {
         stopOtherPlayers(audio);
-        if (currentAudio !== audio) nowDismissed = false;
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         updateNowPlaying(audio, card, song);
       });
       audio.addEventListener('pause', () => {
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         if (currentAudio === audio) updateNowPlaying(audio, card, song);
       });
       audio.addEventListener('ended', () => {
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         if (currentAudio === audio) {
           nowPlayingEl.classList.remove('show');
           currentAudio = null;
@@ -325,6 +356,7 @@
     }
 
     shareDialog.querySelector('.share-close').addEventListener('click', () => shareDialog.close());
+    shareDialog.querySelector('.wechat-share').addEventListener('click', shareToWechat);
     shareDialog.querySelector('.copy').addEventListener('click', copyShareLink);
     shareDialog.addEventListener('click', event => {
       if (event.target === shareDialog) shareDialog.close();
@@ -334,11 +366,7 @@
       currentAudio.paused ? currentAudio.play() : currentAudio.pause();
     });
     nowTitleEl.addEventListener('click', () => {
-      if (currentCard) currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-    nowCloseEl.addEventListener('click', () => {
-      nowDismissed = true;
-      nowPlayingEl.classList.remove('show');
+      currentCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
     function renderSongs() {

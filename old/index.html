@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="老湛原创词曲作品目录">
+  <title>老湛 · 原创词曲作品</title>
+  <style>
+    :root {
+      --bg: #090806;
+      --panel: #15110c;
+      --panel-2: #1d160e;
+      --text: #f4eadc;
+      --muted: #ac9c87;
+      --gold: #d9a441;
+      --orange: #f07822;
+      --orange-soft: rgba(240, 120, 34, .12);
+      --line: rgba(217, 164, 65, .25);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% -10%, rgba(240,120,34,.13), transparent 35rem),
+        var(--bg);
+      font-family: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+    button, audio { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+    .wrap { width: min(960px, calc(100% - 28px)); margin: 0 auto; }
+    header { padding: 18px 0 14px; text-align: center; border-bottom: 1px solid var(--line); }
+    h1 { display: inline; margin: 0; color: var(--gold); font-size: 25px; letter-spacing: .12em; }
+    .subtitle { display: inline; margin: 0 0 0 8px; color: var(--muted); font-size: 12px; letter-spacing: .08em; }
+    .header-details { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; margin-top: 5px; }
+    .contact { margin: 0; color: #b8aa96; font-size: 11px; }
+    .contact a { color: inherit; text-decoration: none; }
+    .music-profile { margin: 0; color: #b8aa96; font-size: 11px; }
+    .music-profile a { color: var(--gold); text-decoration: none; }
+    .music-profile a:hover { color: var(--orange); text-decoration: underline; }
+    .cooperation { margin: 4px 0 0; color: var(--orange); font-size: 11px; letter-spacing: .06em; }
+
+    main { padding: 16px 0 6px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    .filter-btn, .secondary-btn, .skip-btn {
+      border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
+      background: transparent; padding: 5px 11px; cursor: pointer; font-size: 13px;
+    }
+    .filter-btn:hover, .filter-btn.active { color: #160c05; border-color: var(--orange); background: var(--orange); }
+    #status { color: var(--muted); text-align: center; padding: 30px 0; }
+    .song-list { display: grid; gap: 9px; }
+    .song-card {
+      border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(29,22,14,.95), rgba(14,12,9,.95));
+      padding: 12px 14px; transition: border-color .2s, box-shadow .2s, background .2s;
+    }
+    .song-card.is-playing { border-color: rgba(240,120,34,.75); background: linear-gradient(145deg, rgba(65,34,15,.78), rgba(19,14,10,.98)); box-shadow: 0 0 22px var(--orange-soft); }
+    .song-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .song-title { margin: 0; color: #fff7eb; font-size: 18px; font-weight: 700; }
+    .category { color: var(--gold); font-size: 13px; white-space: nowrap; }
+    .description { margin: -2px 0 6px; color: var(--muted); font-size: 12px; }
+    .play-area { display: block; }
+    audio { width: 100%; min-width: 0; height: 46px; accent-color: var(--orange); }
+    .control-actions, .secondary-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+    .control-actions { margin-right: 6px; padding-left: 53px; }
+    .secondary-actions { padding-top: 0; border-top: 0; }
+    .skip-btn { color: #e6b875; }
+    .secondary-btn { color: var(--muted); }
+    .skip-btn:hover, .secondary-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .lyrics { display: none; margin: 14px 0 0; padding: 14px; white-space: pre-wrap; color: #ddcfbc; background: rgba(0,0,0,.24); border-radius: 9px; font-size: 14px; overflow-wrap: anywhere; }
+    .lyrics.open { display: block; }
+    .share-dialog { width: min(430px, calc(100% - 28px)); padding: 0; color: var(--text); border: 1px solid rgba(240,120,34,.6); border-radius: 16px; background: #17110b; box-shadow: 0 24px 70px rgba(0,0,0,.65); }
+    .share-dialog::backdrop { background: rgba(0,0,0,.72); backdrop-filter: blur(3px); }
+    .share-inner { padding: 22px; }
+    .share-head { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .share-head h2 { margin: 0; color: var(--gold); font-size: 19px; }
+    .share-close { width: 36px; height: 36px; padding: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: transparent; cursor: pointer; font-size: 22px; }
+    .share-song { margin: 12px 0 5px; color: #fff7eb; font-weight: 700; }
+    .share-note { margin: 0 0 17px; color: var(--muted); font-size: 13px; }
+    .share-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .share-action { min-height: 46px; border: 1px solid var(--orange); border-radius: 10px; color: #170c04; background: var(--orange); cursor: pointer; font-weight: 700; }
+    .share-action.copy { color: var(--gold); border-color: var(--line); background: transparent; }
+    .share-tip { display: none; margin: 15px 0 0; padding: 11px 13px; color: #e7c590; border-radius: 8px; background: rgba(240,120,34,.1); font-size: 13px; }
+    .share-tip.show { display: block; }
+    .now-playing {
+      position: fixed; z-index: 20; left: 50%; top: 10px; transform: translate(-50%, calc(-100% - 30px));
+      width: min(620px, calc(100% - 24px)); display: flex; align-items: center; gap: 12px;
+      padding: 8px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 10px;
+      background: rgba(38,38,38,.97); box-shadow: 0 8px 28px rgba(0,0,0,.48);
+      opacity: 0; visibility: hidden; transition: transform .25s ease, opacity .25s ease, visibility .25s;
+      backdrop-filter: blur(10px);
+    }
+    .now-playing.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+    .now-toggle, .now-close {
+      flex: 0 0 36px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
+      border: 1px solid rgba(255,255,255,.22); border-radius: 8px; color: #eee; background: rgba(255,255,255,.08);
+      cursor: pointer; font-size: 15px;
+    }
+    .now-toggle:hover, .now-toggle:focus-visible, .now-close:hover, .now-close:focus-visible { background: rgba(255,255,255,.17); outline: none; }
+    .now-close { flex-basis: 32px; width: 32px; height: 32px; border: 0; background: transparent; color: #aaa; font-size: 20px; }
+    .now-info { min-width: 0; flex: 1; }
+    .now-label { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
+    .now-title { display: block; width: 100%; padding: 0; border: 0; color: #fff4e5; background: transparent; cursor: pointer; text-align: left; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .now-title:hover { color: #fff; text-decoration: underline; }
+
+    .copyright { margin: 22px 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 11px; background: rgba(217,164,65,.035); }
+    .copyright h2 { display: inline; margin: 0 6px 0 0; color: var(--gold); font-size: 12px; }
+    .copyright p { display: inline; margin: 0; }
+    .copyright p + p::before { content: " "; }
+    footer { padding: 11px 12px 22px; border-top: 1px solid var(--line); color: #857765; text-align: center; font-size: 11px; }
+    @media (max-width: 600px) {
+      header { padding: 13px 0 11px; }
+      .header-details { gap: 1px 10px; }
+      .song-card { padding: 10px 11px; }
+      audio { margin-top: 3px; }
+      .control-actions { padding-left: 0; }
+      .share-actions { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div><h1>老湛</h1><p class="subtitle">原创词曲</p></div>
+      <div class="header-details">
+        <p class="contact">微信：maitianjiao</p>
+        <p class="contact">邮箱：<a href="mailto:yimin.zhan8@gmail.com">yimin.zhan8@gmail.com</a></p>
+        <p class="music-profile">网易云：<a href="https://163cn.tv/bcWzubsx" target="_blank" rel="noopener noreferrer">歌手迷遥音乐</a></p>
+      </div>
+      <p class="cooperation">作品合作 · 商用授权 · 词曲邀约</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="filters" id="filters" aria-label="歌曲分类"></nav>
+    <p id="status">歌曲加载中…</p>
+    <section class="song-list" id="songList" aria-live="polite"></section>
+
+    <section class="copyright" aria-labelledby="copyright-title">
+      <h2 id="copyright-title">版权声明</h2>
+      <p>本站展示的原创词曲作品，其著作权归作者老湛所有。未经授权，不得擅自复制、改编、翻唱发行、商业使用或以其他方式传播。</p>
+      <p>如需演唱、制作、发行、影视/广告/短视频配乐及其他商业使用，请联系作者取得授权。</p>
+    </section>
+  </main>
+
+  <aside class="now-playing" id="nowPlaying" aria-live="polite" aria-label="正在播放">
+    <button class="now-toggle" id="nowToggle" type="button" aria-label="暂停">Ⅱ</button>
+    <div class="now-info">
+      <span class="now-label" id="nowLabel">正在播放</span>
+      <button class="now-title" id="nowTitle" type="button"></button>
+    </div>
+    <button class="now-close" id="nowClose" type="button" aria-label="关闭正在播放提示">×</button>
+  </aside>
+
+  <dialog class="share-dialog" id="shareDialog" aria-labelledby="shareTitle">
+    <div class="share-inner">
+      <div class="share-head">
+        <h2 id="shareTitle">分享作品</h2>
+        <button class="share-close" type="button" aria-label="关闭分享窗口">×</button>
+      </div>
+      <p class="share-song" id="shareSong"></p>
+      <p class="share-note">复制这首歌的专属链接，对方打开后会直接定位到该作品。</p>
+      <div class="share-actions">
+        <button class="share-action copy" type="button">复制单曲链接</button>
+      </div>
+      <p class="share-tip" id="shareTip" role="status"></p>
+    </div>
+  </dialog>
+
+  <footer>© 2026 老湛 · All Rights Reserved · 原创词曲作品</footer>
+
+  <script>
+    const listEl = document.querySelector('#songList');
+    const filtersEl = document.querySelector('#filters');
+    const statusEl = document.querySelector('#status');
+    const shareDialog = document.querySelector('#shareDialog');
+    const shareSongEl = document.querySelector('#shareSong');
+    const shareTipEl = document.querySelector('#shareTip');
+    const nowPlayingEl = document.querySelector('#nowPlaying');
+    const nowToggleEl = document.querySelector('#nowToggle');
+    const nowTitleEl = document.querySelector('#nowTitle');
+    const nowLabelEl = document.querySelector('#nowLabel');
+    const nowCloseEl = document.querySelector('#nowClose');
+    let songs = [];
+    let activeCategory = '全部';
+    let shareData = null;
+    let currentAudio = null;
+    let currentCard = null;
+    let nowDismissed = false;
+
+    const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, char => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[char]));
+
+    const songAnchor = song => `song-${encodeURIComponent(String(song.audio || song.title)).replace(/%/g, '')}`;
+    const songUrl = song => {
+      const url = new URL(window.location.href);
+      url.hash = songAnchor(song);
+      return url.href;
+    };
+
+    async function copyShareLink() {
+      if (!shareData) return;
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        shareTipEl.textContent = '单曲链接已复制，可以粘贴发送给微信好友。';
+      } catch (_) {
+        const input = document.createElement('textarea');
+        input.value = shareData.url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        input.remove();
+        shareTipEl.textContent = '单曲链接已复制，可以粘贴发送给微信好友。';
+      }
+      shareTipEl.classList.add('show');
+    }
+
+    function openShare(song) {
+      shareData = {
+        title: `《${song.title}》｜老湛原创词曲`,
+        text: `分享老湛原创词曲作品《${song.title}》`,
+        url: songUrl(song)
+      };
+      shareSongEl.textContent = `《${song.title}》`;
+      shareTipEl.textContent = '';
+      shareTipEl.classList.remove('show');
+      shareDialog.showModal();
+    }
+
+    function stopOtherPlayers(current) {
+      document.querySelectorAll('audio').forEach(audio => {
+        if (audio !== current && !audio.paused) audio.pause();
+      });
+    }
+
+    function syncPlayerState(audio, card) {
+      const playing = !audio.paused && !audio.ended;
+      nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
+      card.classList.toggle('is-playing', playing);
+    }
+
+    function updateNowPlaying(audio, card, song) {
+      currentAudio = audio;
+      currentCard = card;
+      const playing = !audio.paused && !audio.ended;
+      nowTitleEl.textContent = `《${song.title}》`;
+      nowToggleEl.textContent = playing ? 'Ⅱ' : '▶';
+      nowToggleEl.setAttribute('aria-label', playing ? '暂停' : '继续播放');
+      nowPlayingEl.classList.toggle('show', !audio.ended && !nowDismissed);
+    }
+
+    function buildCard(song) {
+      const card = document.createElement('article');
+      card.className = 'song-card';
+      card.id = songAnchor(song);
+      const startSec = Number(song.start_sec);
+      const hasStart = Number.isFinite(startSec) && startSec > 0;
+      card.innerHTML = `
+        <div class="song-head">
+          <h2 class="song-title">${escapeHtml(song.title)}</h2>
+          <span class="category">${escapeHtml(song.category)}</span>
+        </div>
+        ${song.desc ? `<p class="description">${escapeHtml(song.desc)}</p>` : ''}
+        <div class="play-area">
+          <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
+        </div>
+        ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏</button></div>` : ''}
+        <div class="secondary-actions"><button class="secondary-btn lyrics-btn" type="button" aria-expanded="false">查看歌词</button><button class="secondary-btn share-btn" type="button">分享这首歌</button></div>
+        <div class="lyrics" aria-live="polite"></div>`;
+
+      const audio = card.querySelector('audio');
+      audio.addEventListener('play', () => {
+        stopOtherPlayers(audio);
+        if (currentAudio !== audio) nowDismissed = false;
+        syncPlayerState(audio, card);
+        updateNowPlaying(audio, card, song);
+      });
+      audio.addEventListener('pause', () => {
+        syncPlayerState(audio, card);
+        if (currentAudio === audio) updateNowPlaying(audio, card, song);
+      });
+      audio.addEventListener('ended', () => {
+        syncPlayerState(audio, card);
+        if (currentAudio === audio) {
+          nowPlayingEl.classList.remove('show');
+          currentAudio = null;
+          currentCard = null;
+        }
+      });
+
+      const skipButton = card.querySelector('.skip-btn');
+      if (skipButton) skipButton.addEventListener('click', async () => {
+        stopOtherPlayers(audio);
+        audio.currentTime = startSec;
+        try { await audio.play(); } catch (_) { /* 浏览器会保留原生播放入口 */ }
+      });
+
+      const lyricsButton = card.querySelector('.lyrics-btn');
+      card.querySelector('.share-btn').addEventListener('click', () => openShare(song));
+      const lyricsEl = card.querySelector('.lyrics');
+      lyricsButton.addEventListener('click', async () => {
+        if (lyricsEl.classList.contains('open')) {
+          lyricsEl.classList.remove('open');
+          lyricsButton.textContent = '查看歌词';
+          lyricsButton.setAttribute('aria-expanded', 'false');
+          return;
+        }
+        lyricsEl.classList.add('open');
+        lyricsButton.textContent = '收起歌词';
+        lyricsButton.setAttribute('aria-expanded', 'true');
+        if (lyricsEl.dataset.loaded) return;
+        lyricsEl.textContent = '歌词加载中…';
+        try {
+          const res = await fetch(song.lyrics);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          lyricsEl.textContent = await res.text();
+          lyricsEl.dataset.loaded = 'true';
+        } catch (error) {
+          lyricsEl.textContent = '歌词加载失败：文件不存在或无法访问';
+        }
+      });
+      return card;
+    }
+
+    shareDialog.querySelector('.share-close').addEventListener('click', () => shareDialog.close());
+    shareDialog.querySelector('.copy').addEventListener('click', copyShareLink);
+    shareDialog.addEventListener('click', event => {
+      if (event.target === shareDialog) shareDialog.close();
+    });
+    nowToggleEl.addEventListener('click', () => {
+      if (!currentAudio) return;
+      currentAudio.paused ? currentAudio.play() : currentAudio.pause();
+    });
+    nowTitleEl.addEventListener('click', () => {
+      if (currentCard) currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    nowCloseEl.addEventListener('click', () => {
+      nowDismissed = true;
+      nowPlayingEl.classList.remove('show');
+    });
+
+    function renderSongs() {
+      document.querySelectorAll('audio').forEach(audio => audio.pause());
+      nowPlayingEl.classList.remove('show');
+      currentAudio = null;
+      currentCard = null;
+      listEl.replaceChildren();
+      const visible = activeCategory === '全部' ? songs : songs.filter(song => song.category === activeCategory);
+      visible.forEach(song => listEl.appendChild(buildCard(song)));
+      statusEl.hidden = visible.length > 0;
+      statusEl.textContent = visible.length ? '' : '当前分类暂无歌曲';
+    }
+
+    function renderFilters() {
+      const categories = ['全部', ...new Set(songs.map(song => song.category).filter(Boolean))];
+      filtersEl.replaceChildren(...categories.map(category => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `filter-btn${category === activeCategory ? ' active' : ''}`;
+        button.textContent = category;
+        button.addEventListener('click', () => {
+          activeCategory = category;
+          filtersEl.querySelectorAll('button').forEach(item => item.classList.toggle('active', item === button));
+          renderSongs();
+        });
+        return button;
+      }));
+    }
+
+    fetch('data/songs.json', { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data)) throw new Error('歌曲数据格式不正确');
+        songs = data.map((song, index) => ({ ...song, _index: index }))
+          .sort((a, b) => (Number(b.weight) || 0) - (Number(a.weight) || 0) || a._index - b._index);
+        renderFilters();
+        renderSongs();
+        if (window.location.hash) {
+          requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        }
+      })
+      .catch(error => {
+        statusEl.hidden = false;
+        statusEl.textContent = `歌曲加载失败：${error.message}`;
+      });
+  </script>
+</body>
+</html>
