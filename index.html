@@ -260,9 +260,8 @@ function getSongSlug(song){
 }
 
 function buildSongShareUrl(song){
-  const url = new URL(window.location.href);
-  url.searchParams.set("song", getSongSlug(song));
-  url.hash = "";
+  const url = new URL(window.location.origin + window.location.pathname);
+  url.hash = "song=" + encodeURIComponent(getSongSlug(song));
   return url.toString();
 }
 
@@ -282,35 +281,38 @@ function showShareToast(message){
 
 async function shareSong(song){
   const url = buildSongShareUrl(song);
-  const title = `老湛《${song.title}》`;
-  const shareText = "原创词曲作品 · 点击试听";
-  if(navigator.share){
-    try{
-      await navigator.share({title:title, text:shareText, url:url});
-      return;
-    }catch(err){
-      if(err && err.name === "AbortError") return;
-    }
-  }
+
   try{
     await navigator.clipboard.writeText(url);
-    showShareToast("歌曲专属链接已复制");
+    showShareToast(`《${song.title}》专属链接已复制，粘贴到微信即可`);
   }catch(err){
-    window.prompt("复制这个歌曲专属链接：",url);
+    window.prompt(`复制《${song.title}》的专属链接：`, url);
   }
 }
 
+function getSharedSongSlug(){
+  const hash = window.location.hash || "";
+  const match = hash.match(/^#song=(.+)$/);
+  return match ? decodeURIComponent(match[1]) : "";
+}
+
 function focusSharedSong(){
-  const slug = new URLSearchParams(window.location.search).get("song");
+  const slug = getSharedSongSlug();
   if(!slug) return;
+
   const cards = document.querySelectorAll(".song");
   let target = null;
+
   cards.forEach(card=>{
+    card.classList.remove("shared-target");
     if(card.dataset.songSlug === slug) target = card;
   });
+
   if(target){
     target.classList.add("shared-target");
-    setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"center"}),150);
+    setTimeout(()=>{
+      target.scrollIntoView({behavior:"smooth", block:"center"});
+    },150);
   }
 }
 
@@ -462,6 +464,8 @@ function renderSongs(){
     list.appendChild(div);
   });
 }
+
+window.addEventListener("hashchange", focusSharedSong);
 
 loadSongs();
 </script>
