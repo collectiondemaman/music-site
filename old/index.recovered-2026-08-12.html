@@ -31,41 +31,46 @@
     button, audio { font: inherit; }
     button { -webkit-tap-highlight-color: transparent; }
     .wrap { width: min(960px, calc(100% - 28px)); margin: 0 auto; }
-    header { padding: 18px 0 14px; text-align: center; border-bottom: 1px solid var(--line); }
-    h1 { display: inline; margin: 0; color: var(--gold); font-size: 25px; letter-spacing: .12em; }
-    .subtitle { display: inline; margin: 0 0 0 8px; color: var(--muted); font-size: 12px; letter-spacing: .08em; }
-    .header-details { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; margin-top: 5px; }
-    .contact { margin: 0; color: #b8aa96; font-size: 11px; }
+    header { padding: 54px 0 30px; text-align: center; border-bottom: 1px solid var(--line); }
+    h1 { margin: 0; color: var(--gold); font-size: clamp(32px, 7vw, 48px); letter-spacing: .18em; }
+    .subtitle { margin: 6px 0 18px; color: var(--muted); letter-spacing: .22em; }
+    .contact { margin: 0; color: #d5c5af; font-size: 14px; }
     .contact a { color: inherit; text-decoration: none; }
-    .music-profile { margin: 0; color: #b8aa96; font-size: 11px; }
+    .music-profile { margin: 5px 0 0; color: #d5c5af; font-size: 14px; }
     .music-profile a { color: var(--gold); text-decoration: none; }
     .music-profile a:hover { color: var(--orange); text-decoration: underline; }
-    .cooperation { margin: 4px 0 0; color: var(--orange); font-size: 11px; letter-spacing: .06em; }
+    .cooperation { margin: 8px 0 0; color: var(--orange); font-size: 14px; letter-spacing: .09em; }
 
-    main { padding: 16px 0 6px; }
-    .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
+    main { padding: 30px 0 10px; }
+    .filters { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 24px; }
     .filter-btn, .secondary-btn, .skip-btn {
       border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
-      background: transparent; padding: 5px 11px; cursor: pointer; font-size: 13px;
+      background: transparent; padding: 7px 14px; cursor: pointer;
     }
     .filter-btn:hover, .filter-btn.active { color: #160c05; border-color: var(--orange); background: var(--orange); }
     #status { color: var(--muted); text-align: center; padding: 30px 0; }
-    .song-list { display: grid; gap: 9px; }
+    .song-list { display: grid; gap: 14px; }
     .song-card {
       border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(29,22,14,.95), rgba(14,12,9,.95));
-      padding: 12px 14px; transition: border-color .2s, box-shadow .2s, background .2s;
+      padding: 18px; transition: border-color .2s, box-shadow .2s, background .2s;
     }
     .song-card.is-playing { border-color: rgba(240,120,34,.75); background: linear-gradient(145deg, rgba(65,34,15,.78), rgba(19,14,10,.98)); box-shadow: 0 0 22px var(--orange-soft); }
-    .song-card.link-target { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(217,164,65,.18), 0 0 25px rgba(217,164,65,.12); }
-    .song-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .song-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
     .song-title { margin: 0; color: #fff7eb; font-size: 18px; font-weight: 700; }
     .category { color: var(--gold); font-size: 13px; white-space: nowrap; }
-    .description { margin: -2px 0 6px; color: var(--muted); font-size: 12px; }
-    .play-area { display: block; }
-    audio { width: 100%; min-width: 0; height: 46px; accent-color: var(--orange); }
-    .control-actions, .secondary-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
-    .control-actions { margin-right: 6px; padding-left: 53px; }
-    .secondary-actions { padding-top: 0; border-top: 0; }
+    .description { margin: -5px 0 12px; color: var(--muted); font-size: 14px; }
+    .play-area { display: flex; align-items: center; gap: 12px; }
+    .big-play {
+      flex: 0 0 48px; width: 48px; height: 48px; display: grid; place-items: center;
+      border: 2px solid var(--orange); border-radius: 50%; color: var(--orange);
+      background: rgba(240,120,34,.08); cursor: pointer; font-size: 20px; line-height: 1;
+    }
+    .big-play:hover, .big-play:focus-visible { color: #160c05; background: var(--orange); outline: none; box-shadow: 0 0 0 4px rgba(240,120,34,.15); }
+    .big-play .play-icon { transform: translateX(1px); }
+    audio { width: 100%; min-width: 0; height: 42px; accent-color: var(--orange); }
+    .control-actions, .secondary-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .control-actions { margin-top: 10px; padding-left: 60px; }
+    .secondary-actions { margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(217,164,65,.13); }
     .skip-btn { color: #e6b875; }
     .secondary-btn { color: var(--muted); }
     .skip-btn:hover, .secondary-btn:hover { border-color: var(--orange); color: var(--orange); }
@@ -85,53 +90,46 @@
     .share-tip { display: none; margin: 15px 0 0; padding: 11px 13px; color: #e7c590; border-radius: 8px; background: rgba(240,120,34,.1); font-size: 13px; }
     .share-tip.show { display: block; }
     .now-playing {
-      position: fixed; z-index: 20; left: 50%; top: 10px; transform: translate(-50%, calc(-100% - 30px));
+      position: fixed; z-index: 20; left: 50%; bottom: 14px; transform: translate(-50%, calc(100% + 30px));
       width: min(620px, calc(100% - 24px)); display: flex; align-items: center; gap: 12px;
-      padding: 8px 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 10px;
-      background: rgba(38,38,38,.97); box-shadow: 0 8px 28px rgba(0,0,0,.48);
+      padding: 10px 12px; border: 1px solid rgba(240,120,34,.65); border-radius: 14px;
+      background: rgba(20,14,9,.96); box-shadow: 0 12px 35px rgba(0,0,0,.55), 0 0 18px rgba(240,120,34,.1);
       opacity: 0; visibility: hidden; transition: transform .25s ease, opacity .25s ease, visibility .25s;
       backdrop-filter: blur(10px);
     }
     .now-playing.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
-    .now-toggle, .now-step, .now-close {
-      flex: 0 0 36px; width: 36px; height: 36px; display: grid; place-items: center; padding: 0;
-      border: 1px solid rgba(255,255,255,.22); border-radius: 8px; color: #eee; background: rgba(255,255,255,.08);
-      cursor: pointer; font-size: 15px;
+    .now-toggle {
+      flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; padding: 0;
+      border: 2px solid var(--orange); border-radius: 50%; color: var(--orange); background: rgba(240,120,34,.08);
+      cursor: pointer; font-size: 17px;
     }
-    .now-step { font-size: 23px; line-height: 1; }
-    .now-toggle:hover, .now-toggle:focus-visible, .now-step:hover, .now-step:focus-visible, .now-close:hover, .now-close:focus-visible { background: rgba(255,255,255,.17); outline: none; }
-    .now-close { flex-basis: 32px; width: 32px; height: 32px; border: 0; background: transparent; color: #aaa; font-size: 20px; }
+    .now-toggle:hover, .now-toggle:focus-visible { color: #160c05; background: var(--orange); outline: none; }
     .now-info { min-width: 0; flex: 1; }
     .now-label { display: block; color: var(--muted); font-size: 11px; letter-spacing: .08em; }
     .now-title { display: block; width: 100%; padding: 0; border: 0; color: #fff4e5; background: transparent; cursor: pointer; text-align: left; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .now-title:hover { color: #fff; text-decoration: underline; }
+    .now-title:hover { color: var(--orange); }
 
-    .copyright { margin: 22px 0 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: 11px; background: rgba(217,164,65,.035); }
-    .copyright h2 { display: inline; margin: 0 6px 0 0; color: var(--gold); font-size: 12px; }
-    .copyright p { display: inline; margin: 0; }
-    .copyright p + p::before { content: " "; }
-    footer { padding: 11px 12px 22px; border-top: 1px solid var(--line); color: #857765; text-align: center; font-size: 11px; }
+    .copyright { margin: 38px 0 24px; padding: 20px; border: 1px solid var(--line); border-radius: 12px; color: var(--muted); font-size: 13px; background: rgba(217,164,65,.035); }
+    .copyright h2 { margin: 0 0 7px; color: var(--gold); font-size: 16px; }
+    .copyright p { margin: 4px 0; }
+    footer { padding: 20px 12px 34px; border-top: 1px solid var(--line); color: #857765; text-align: center; font-size: 13px; }
     @media (max-width: 600px) {
-      header { padding: 13px 0 11px; }
-      .header-details { gap: 1px 10px; }
-      .song-card { padding: 10px 11px; }
+      header { padding-top: 38px; }
+      .song-card { padding: 15px; }
+      .play-area { align-items: flex-start; }
       audio { margin-top: 3px; }
       .control-actions { padding-left: 0; }
       .share-actions { grid-template-columns: 1fr; }
-      .now-playing { top: 6px; width: calc(100% - 12px); gap: 6px; padding: 7px 8px; }
-      .now-toggle, .now-step { flex-basis: 34px; width: 34px; height: 34px; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="wrap">
-      <div><h1>老湛</h1><p class="subtitle">原创词曲</p></div>
-      <div class="header-details">
-        <p class="contact">微信：maitianjiao</p>
-        <p class="contact">邮箱：<a href="mailto:yimin.zhan8@gmail.com">yimin.zhan8@gmail.com</a></p>
-        <p class="music-profile">网易云：<a href="https://163cn.tv/bcWzubsx" target="_blank" rel="noopener noreferrer">歌手迷遥音乐</a></p>
-      </div>
+      <h1>老湛</h1>
+      <p class="subtitle">原创词曲作品</p>
+      <p class="contact">邮箱：<a href="mailto:yimin.zhan8@gmail.com">yimin.zhan8@gmail.com</a></p>
+      <p class="music-profile">网易云音乐：<a href="https://163cn.tv/bcWzubsx" target="_blank" rel="noopener noreferrer">歌手迷遥音乐（@网易云音乐）</a></p>
       <p class="cooperation">作品合作 · 商用授权 · 词曲邀约</p>
     </div>
   </header>
@@ -149,14 +147,11 @@
   </main>
 
   <aside class="now-playing" id="nowPlaying" aria-live="polite" aria-label="正在播放">
-    <button class="now-step" id="nowPrevious" type="button" aria-label="上一首" title="上一首">‹</button>
     <button class="now-toggle" id="nowToggle" type="button" aria-label="暂停">Ⅱ</button>
-    <button class="now-step" id="nowNext" type="button" aria-label="下一首" title="下一首">›</button>
     <div class="now-info">
       <span class="now-label" id="nowLabel">正在播放</span>
       <button class="now-title" id="nowTitle" type="button"></button>
     </div>
-    <button class="now-close" id="nowClose" type="button" aria-label="关闭正在播放提示">×</button>
   </aside>
 
   <dialog class="share-dialog" id="shareDialog" aria-labelledby="shareTitle">
@@ -166,7 +161,7 @@
         <button class="share-close" type="button" aria-label="关闭分享窗口">×</button>
       </div>
       <p class="share-song" id="shareSong"></p>
-      <p class="share-note">复制这首歌的专属链接，对方打开后会直接定位到该作品。</p>
+      <p class="share-note">分享的是这首歌的专属链接，对方打开后会直接定位到该作品。</p>
       <div class="share-actions">
         <button class="share-action wechat-share" type="button">分享到微信</button>
         <button class="share-action copy" type="button">复制单曲链接</button>
@@ -185,18 +180,14 @@
     const shareSongEl = document.querySelector('#shareSong');
     const shareTipEl = document.querySelector('#shareTip');
     const nowPlayingEl = document.querySelector('#nowPlaying');
-    const nowPreviousEl = document.querySelector('#nowPrevious');
     const nowToggleEl = document.querySelector('#nowToggle');
-    const nowNextEl = document.querySelector('#nowNext');
     const nowTitleEl = document.querySelector('#nowTitle');
     const nowLabelEl = document.querySelector('#nowLabel');
-    const nowCloseEl = document.querySelector('#nowClose');
     let songs = [];
     let activeCategory = '全部';
     let shareData = null;
     let currentAudio = null;
     let currentCard = null;
-    let nowDismissed = false;
 
     const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -228,7 +219,8 @@
 
     async function shareToWechat() {
       if (!shareData) return;
-      if (/MicroMessenger/i.test(navigator.userAgent)) {
+      const inWechat = /MicroMessenger/i.test(navigator.userAgent);
+      if (inWechat) {
         shareTipEl.textContent = '请点击微信右上角“…”菜单，再选择“发送给朋友”或“分享到朋友圈”。';
         shareTipEl.classList.add('show');
         return;
@@ -242,17 +234,6 @@
         }
       }
       await copyShareLink();
-    }
-
-    function locateSongFromHash() {
-      if (!window.location.hash) return;
-      const targetId = decodeURIComponent(window.location.hash.slice(1));
-      const target = document.getElementById(targetId);
-      if (!target) return;
-      document.querySelectorAll('.song-card.link-target').forEach(card => card.classList.remove('link-target'));
-      target.classList.add('link-target');
-      requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }));
-      window.setTimeout(() => target.classList.remove('link-target'), 2600);
     }
 
     function openShare(song) {
@@ -273,20 +254,25 @@
       });
     }
 
-    function syncPlayerState(audio, card) {
+    function syncPlayerState(audio, card, button) {
       const playing = !audio.paused && !audio.ended;
+      nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
       card.classList.toggle('is-playing', playing);
+      button.setAttribute('aria-label', playing ? '暂停' : '播放');
+      button.setAttribute('title', playing ? '暂停' : '播放');
+      button.innerHTML = playing
+        ? '<span aria-hidden="true">Ⅱ</span>'
+        : '<span class="play-icon" aria-hidden="true">▶</span>';
     }
 
     function updateNowPlaying(audio, card, song) {
       currentAudio = audio;
       currentCard = card;
       const playing = !audio.paused && !audio.ended;
-      nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
       nowTitleEl.textContent = `《${song.title}》`;
       nowToggleEl.textContent = playing ? 'Ⅱ' : '▶';
       nowToggleEl.setAttribute('aria-label', playing ? '暂停' : '继续播放');
-      nowPlayingEl.classList.toggle('show', !audio.ended && !nowDismissed);
+      nowPlayingEl.classList.toggle('show', !audio.ended);
     }
 
     function buildCard(song) {
@@ -302,25 +288,27 @@
         </div>
         ${song.desc ? `<p class="description">${escapeHtml(song.desc)}</p>` : ''}
         <div class="play-area">
+          <button class="big-play" type="button" aria-label="播放" title="播放"><span class="play-icon" aria-hidden="true">▶</span></button>
           <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
         </div>
-        ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏</button></div>` : ''}
+        ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏 · ${escapeHtml(startSec)}s</button></div>` : ''}
         <div class="secondary-actions"><button class="secondary-btn lyrics-btn" type="button" aria-expanded="false">查看歌词</button><button class="secondary-btn share-btn" type="button">分享这首歌</button></div>
         <div class="lyrics" aria-live="polite"></div>`;
 
       const audio = card.querySelector('audio');
+      const playButton = card.querySelector('.big-play');
+      playButton.addEventListener('click', () => audio.paused ? audio.play() : audio.pause());
       audio.addEventListener('play', () => {
         stopOtherPlayers(audio);
-        if (currentAudio !== audio) nowDismissed = false;
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         updateNowPlaying(audio, card, song);
       });
       audio.addEventListener('pause', () => {
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         if (currentAudio === audio) updateNowPlaying(audio, card, song);
       });
       audio.addEventListener('ended', () => {
-        syncPlayerState(audio, card);
+        syncPlayerState(audio, card, playButton);
         if (currentAudio === audio) {
           nowPlayingEl.classList.remove('show');
           currentAudio = null;
@@ -372,28 +360,8 @@
       if (!currentAudio) return;
       currentAudio.paused ? currentAudio.play() : currentAudio.pause();
     });
-    function switchRelativeSong(direction) {
-      const cards = Array.from(listEl.querySelectorAll('.song-card'));
-      if (!cards.length) return;
-      let index = currentCard ? cards.indexOf(currentCard) : 0;
-      if (index < 0) index = 0;
-      const targetIndex = (index + direction + cards.length) % cards.length;
-      const targetCard = cards[targetIndex];
-      const targetAudio = targetCard.querySelector('audio');
-      if (!targetAudio) return;
-      nowDismissed = false;
-      targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      const playPromise = targetAudio.play();
-      if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
-    }
-    nowPreviousEl.addEventListener('click', () => switchRelativeSong(-1));
-    nowNextEl.addEventListener('click', () => switchRelativeSong(1));
     nowTitleEl.addEventListener('click', () => {
-      if (currentCard) currentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    });
-    nowCloseEl.addEventListener('click', () => {
-      nowDismissed = true;
-      nowPlayingEl.classList.remove('show');
+      currentCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
 
     function renderSongs() {
@@ -435,14 +403,14 @@
           .sort((a, b) => (Number(b.weight) || 0) - (Number(a.weight) || 0) || a._index - b._index);
         renderFilters();
         renderSongs();
-        locateSongFromHash();
+        if (window.location.hash) {
+          requestAnimationFrame(() => document.querySelector(window.location.hash)?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+        }
       })
       .catch(error => {
         statusEl.hidden = false;
         statusEl.textContent = `歌曲加载失败：${error.message}`;
       });
-
-    window.addEventListener('hashchange', locateSongFromHash);
   </script>
 </body>
 </html>

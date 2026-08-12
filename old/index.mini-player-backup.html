@@ -275,6 +275,7 @@
 
     function syncPlayerState(audio, card) {
       const playing = !audio.paused && !audio.ended;
+      nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
       card.classList.toggle('is-playing', playing);
     }
 
@@ -282,7 +283,6 @@
       currentAudio = audio;
       currentCard = card;
       const playing = !audio.paused && !audio.ended;
-      nowLabelEl.textContent = playing ? '正在播放' : '已暂停';
       nowTitleEl.textContent = `《${song.title}》`;
       nowToggleEl.textContent = playing ? 'Ⅱ' : '▶';
       nowToggleEl.setAttribute('aria-label', playing ? '暂停' : '继续播放');
