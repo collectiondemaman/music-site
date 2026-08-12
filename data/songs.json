@@ -23,7 +23,7 @@
     "audio": "audio/xiachen.mp3",
     "lyrics": "lyrics/xiachen.txt",
     "desc": "",
-    "weight": 85,
+    "weight": 90,
     "start_sec": 28
   },
   {
@@ -95,7 +95,7 @@
     "audio": "audio/zhiguozu.mp3",
     "lyrics": "lyrics/zhiguozu.txt",
     "desc": "",
-    "weight": 75,
+    "weight": 90,
     "start_sec": 19
   },
   {
