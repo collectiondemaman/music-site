@@ -64,8 +64,7 @@
     .play-area { display: block; }
     audio { width: 100%; min-width: 0; height: 46px; accent-color: var(--orange); }
     .control-actions, .secondary-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
-    .control-actions { margin-right: 6px; padding-left: 0; }
-    .skip-btn:disabled { opacity: .55; cursor: wait; }
+    .control-actions { margin-right: 6px; padding-left: 53px; }
     .secondary-actions { padding-top: 0; border-top: 0; }
     .secondary-btn { color: var(--muted); }
     .secondary-btn:hover { border-color: var(--orange); color: var(--orange); }
@@ -312,54 +311,10 @@
         <div class="play-area">
           <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
         </div>
-        ${Number(song.start_sec) > 0 ? '<div class="control-actions"><button class="secondary-btn skip-btn" type="button">跳过前奏</button></div>' : ''}
         <div class="secondary-actions"><button class="secondary-btn lyrics-btn" type="button" aria-expanded="false">查看歌词</button><button class="secondary-btn share-btn" type="button">分享这首歌</button></div>
         <div class="lyrics" aria-live="polite"></div>`;
 
       const audio = card.querySelector('audio');
-      const skipButton = card.querySelector('.skip-btn');
-
-      function seekToIntroEnd() {
-        if (!skipButton) return;
-        const target = Number(song.start_sec);
-        if (!Number.isFinite(target) || target <= 0) return;
-
-        skipButton.disabled = true;
-        skipButton.textContent = '正在跳转…';
-
-        const finishSeek = () => {
-          const safeTarget = Number.isFinite(audio.duration)
-            ? Math.min(target, Math.max(0, audio.duration - 0.25))
-            : target;
-          try {
-            audio.currentTime = safeTarget;
-          } catch (_) {
-            skipButton.disabled = false;
-            skipButton.textContent = '跳过前奏';
-            return;
-          }
-
-          const playPromise = audio.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(() => {});
-          }
-          skipButton.disabled = false;
-          skipButton.textContent = '跳过前奏';
-        };
-
-        if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) {
-          finishSeek();
-        } else {
-          audio.addEventListener('loadedmetadata', finishSeek, { once: true });
-          audio.load();
-          const initialPlay = audio.play();
-          if (initialPlay && typeof initialPlay.catch === 'function') {
-            initialPlay.catch(() => {});
-          }
-        }
-      }
-
-      if (skipButton) skipButton.addEventListener('click', seekToIntroEnd);
       audio.addEventListener('play', () => {
         stopOtherPlayers(audio);
         if (currentAudio !== audio) nowDismissed = false;
@@ -500,11 +455,7 @@
       })
       .then(data => {
         if (!Array.isArray(data)) throw new Error('歌曲数据格式不正确');
-        const audioBase = 'https://audio.miyaomusic.com/audio/';
-        songs = data.map((song, index) => {
-          const fileName = String(song.audio || '').split('/').pop();
-          return { ...song, audio: new URL(fileName, audioBase).href, _index: index };
-        })
+        songs = data.map((song, index) => ({ ...song, _index: index }))
           .sort((a, b) => (Number(b.weight) || 0) - (Number(a.weight) || 0) || a._index - b._index);
         renderFilters();
         renderSongs();
