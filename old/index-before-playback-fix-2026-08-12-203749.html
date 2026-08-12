@@ -278,42 +278,8 @@
 
     function stopOtherPlayers(current) {
       document.querySelectorAll('audio').forEach(audio => {
-        if (audio !== current) {
-          audio.pause();
-          if (audio.getAttribute('src')) {
-            audio.removeAttribute('src');
-            audio.load();
-          }
-        }
+        if (audio !== current && !audio.paused) audio.pause();
       });
-    }
-
-    function ensureAudioSource(audio) {
-      if (!audio.getAttribute('src')) {
-        audio.src = audio.dataset.src;
-        audio.load();
-      }
-    }
-
-    function waitForMedia(audio, eventName, timeout = 10000) {
-      return new Promise((resolve, reject) => {
-        let timer;
-        const done = () => { cleanup(); resolve(); };
-        const failed = () => { cleanup(); reject(new Error('音频加载失败')); };
-        const cleanup = () => {
-          clearTimeout(timer);
-          audio.removeEventListener(eventName, done);
-          audio.removeEventListener('error', failed);
-        };
-        audio.addEventListener(eventName, done, { once: true });
-        audio.addEventListener('error', failed, { once: true });
-        timer = setTimeout(() => { cleanup(); reject(new Error('音频加载超时')); }, timeout);
-      });
-    }
-
-    async function playAudio(audio) {
-      ensureAudioSource(audio);
-      await audio.play();
     }
 
     function syncPlayerState(audio, card) {
@@ -346,18 +312,13 @@
         </div>
         ${song.desc ? `<p class="description">${escapeHtml(song.desc)}</p>` : ''}
         <div class="play-area">
-          <audio controls preload="none" data-src="${escapeHtml(song.audio)}" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
+          <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
         </div>
         ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏</button></div>` : ''}
         <div class="secondary-actions"><button class="secondary-btn lyrics-btn" type="button" aria-expanded="false">查看歌词</button><button class="secondary-btn share-btn" type="button">分享这首歌</button></div>
         <div class="lyrics" aria-live="polite"></div>`;
 
       const audio = card.querySelector('audio');
-      let recoveryTimer = null;
-      let recovering = false;
-      const restoreSource = () => ensureAudioSource(audio);
-      audio.addEventListener('touchstart', restoreSource, { passive: true });
-      audio.addEventListener('pointerdown', restoreSource);
       audio.addEventListener('play', () => {
         stopOtherPlayers(audio);
         if (currentAudio !== audio) nowDismissed = false;
@@ -368,33 +329,6 @@
         syncPlayerState(audio, card);
         if (currentAudio === audio) updateNowPlaying(audio, card, song);
       });
-      audio.addEventListener('playing', () => {
-        clearTimeout(recoveryTimer);
-        recovering = false;
-      });
-      const scheduleRecovery = () => {
-        if (currentAudio !== audio || audio.paused || recovering) return;
-        clearTimeout(recoveryTimer);
-        recoveryTimer = setTimeout(async () => {
-          if (currentAudio !== audio || audio.paused) return;
-          recovering = true;
-          const resumeAt = audio.currentTime || 0;
-          audio.removeAttribute('src');
-          audio.load();
-          ensureAudioSource(audio);
-          try {
-            await waitForMedia(audio, 'loadedmetadata', 10000);
-            if (resumeAt > 0 && Number.isFinite(audio.duration)) audio.currentTime = Math.min(resumeAt, Math.max(0, audio.duration - .25));
-            await audio.play();
-          } catch (_) {
-            nowLabelEl.textContent = '加载中断，请点击播放重试';
-          } finally {
-            recovering = false;
-          }
-        }, 3500);
-      };
-      audio.addEventListener('waiting', scheduleRecovery);
-      audio.addEventListener('stalled', scheduleRecovery);
       audio.addEventListener('ended', () => {
         syncPlayerState(audio, card);
         if (currentAudio === audio) {
@@ -405,7 +339,6 @@
           if (nextAudio) {
             nowDismissed = false;
             nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            ensureAudioSource(nextAudio);
             const nextPromise = nextAudio.play();
             if (nextPromise && typeof nextPromise.catch === 'function') {
               nextPromise.catch(() => {
@@ -425,21 +358,8 @@
       const skipButton = card.querySelector('.skip-btn');
       if (skipButton) skipButton.addEventListener('click', async () => {
         stopOtherPlayers(audio);
-        ensureAudioSource(audio);
-        skipButton.disabled = true;
-        const oldText = skipButton.textContent;
-        skipButton.textContent = '加载中…';
-        try {
-          if (audio.readyState < 1) await waitForMedia(audio, 'loadedmetadata', 10000);
-          audio.currentTime = Math.min(startSec, Math.max(0, audio.duration - .25));
-          if (audio.readyState < 3) await waitForMedia(audio, 'canplay', 10000);
-          await audio.play();
-        } catch (_) {
-          nowLabelEl.textContent = '加载失败，请重试';
-        } finally {
-          skipButton.disabled = false;
-          skipButton.textContent = oldText;
-        }
+        audio.currentTime = startSec;
+        try { await audio.play(); } catch (_) { /* 浏览器会保留原生播放入口 */ }
       });
 
       const lyricsButton = card.querySelector('.lyrics-btn');
@@ -490,7 +410,6 @@
       if (!targetAudio) return;
       nowDismissed = false;
       targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      ensureAudioSource(targetAudio);
       const playPromise = targetAudio.play();
       if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
     }
