@@ -44,7 +44,7 @@
 
     main { padding: 16px 0 6px; }
     .filters { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 13px; }
-    .filter-btn, .secondary-btn {
+    .filter-btn, .secondary-btn, .skip-btn {
       border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
       background: transparent; padding: 5px 11px; cursor: pointer; font-size: 13px;
     }
@@ -66,8 +66,9 @@
     .control-actions, .secondary-actions { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
     .control-actions { margin-right: 6px; padding-left: 53px; }
     .secondary-actions { padding-top: 0; border-top: 0; }
+    .skip-btn { color: #e6b875; }
     .secondary-btn { color: var(--muted); }
-    .secondary-btn:hover { border-color: var(--orange); color: var(--orange); }
+    .skip-btn:hover, .secondary-btn:hover { border-color: var(--orange); color: var(--orange); }
     .lyrics { display: none; margin: 14px 0 0; padding: 14px; white-space: pre-wrap; color: #ddcfbc; background: rgba(0,0,0,.24); border-radius: 9px; font-size: 14px; overflow-wrap: anywhere; }
     .lyrics.open { display: block; }
     .share-dialog { width: min(430px, calc(100% - 28px)); padding: 0; color: var(--text); border: 1px solid rgba(240,120,34,.6); border-radius: 16px; background: #17110b; box-shadow: 0 24px 70px rgba(0,0,0,.65); }
@@ -302,6 +303,8 @@
       card.className = 'song-card';
       card.id = songAnchor(song);
       card.dataset.songKey = songKey(song);
+      const startSec = Number(song.start_sec);
+      const hasStart = Number.isFinite(startSec) && startSec > 0;
       card.innerHTML = `
         <div class="song-head">
           <h2 class="song-title">${escapeHtml(song.title)}</h2>
@@ -311,6 +314,7 @@
         <div class="play-area">
           <audio controls preload="none" src="${escapeHtml(song.audio)}">您的浏览器不支持音频播放。</audio>
         </div>
+        ${hasStart ? `<div class="control-actions"><button class="skip-btn" type="button">跳过前奏</button></div>` : ''}
         <div class="secondary-actions"><button class="secondary-btn lyrics-btn" type="button" aria-expanded="false">查看歌词</button><button class="secondary-btn share-btn" type="button">分享这首歌</button></div>
         <div class="lyrics" aria-live="polite"></div>`;
 
@@ -349,6 +353,13 @@
             currentCard = null;
           }
         }
+      });
+
+      const skipButton = card.querySelector('.skip-btn');
+      if (skipButton) skipButton.addEventListener('click', async () => {
+        stopOtherPlayers(audio);
+        audio.currentTime = startSec;
+        try { await audio.play(); } catch (_) { /* 浏览器会保留原生播放入口 */ }
       });
 
       const lyricsButton = card.querySelector('.lyrics-btn');
