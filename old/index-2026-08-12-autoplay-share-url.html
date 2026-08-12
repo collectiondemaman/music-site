@@ -202,16 +202,10 @@
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
     }[char]));
 
-    const songKey = song => {
-      const audioPath = String(song.audio || '');
-      const fileName = audioPath.split('/').pop() || '';
-      return fileName.replace(/\.[^.]+$/, '') || String(song.title || 'song');
-    };
     const songAnchor = song => `song-${encodeURIComponent(String(song.audio || song.title)).replace(/%/g, '')}`;
     const songUrl = song => {
       const url = new URL(window.location.href);
-      url.searchParams.set('song', songKey(song));
-      url.hash = '';
+      url.hash = songAnchor(song);
       return url.href;
     };
 
@@ -250,18 +244,15 @@
       await copyShareLink();
     }
 
-    function locateSharedSong() {
-      const sharedKey = new URLSearchParams(window.location.search).get('song');
-      let target = sharedKey
-        ? Array.from(document.querySelectorAll('.song-card')).find(card => card.dataset.songKey === sharedKey)
-        : null;
-      if (!target && window.location.hash) {
-        const targetId = decodeURIComponent(window.location.hash.slice(1));
-        target = document.getElementById(targetId);
-      }
+    function locateSongFromHash() {
+      if (!window.location.hash) return;
+      const targetId = decodeURIComponent(window.location.hash.slice(1));
+      const target = document.getElementById(targetId);
       if (!target) return;
       document.querySelectorAll('.song-card.link-target').forEach(card => card.classList.remove('link-target'));
       target.classList.add('link-target');
+      requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+      window.setTimeout(() => target.classList.remove('link-target'), 2600);
     }
 
     function openShare(song) {
@@ -302,7 +293,6 @@
       const card = document.createElement('article');
       card.className = 'song-card';
       card.id = songAnchor(song);
-      card.dataset.songKey = songKey(song);
       const startSec = Number(song.start_sec);
       const hasStart = Number.isFinite(startSec) && startSec > 0;
       card.innerHTML = `
@@ -332,26 +322,9 @@
       audio.addEventListener('ended', () => {
         syncPlayerState(audio, card);
         if (currentAudio === audio) {
-          const cards = Array.from(listEl.querySelectorAll('.song-card'));
-          const currentIndex = cards.indexOf(card);
-          const nextCard = currentIndex >= 0 ? cards[currentIndex + 1] : null;
-          const nextAudio = nextCard ? nextCard.querySelector('audio') : null;
-          if (nextAudio) {
-            nowDismissed = false;
-            nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            const nextPromise = nextAudio.play();
-            if (nextPromise && typeof nextPromise.catch === 'function') {
-              nextPromise.catch(() => {
-                nowPlayingEl.classList.remove('show');
-                currentAudio = null;
-                currentCard = null;
-              });
-            }
-          } else {
-            nowPlayingEl.classList.remove('show');
-            currentAudio = null;
-            currentCard = null;
-          }
+          nowPlayingEl.classList.remove('show');
+          currentAudio = null;
+          currentCard = null;
         }
       });
 
@@ -429,15 +402,7 @@
       currentAudio = null;
       currentCard = null;
       listEl.replaceChildren();
-      let visible = activeCategory === '全部' ? [...songs] : songs.filter(song => song.category === activeCategory);
-      const sharedKey = new URLSearchParams(window.location.search).get('song');
-      if (sharedKey && activeCategory === '全部') {
-        const sharedIndex = visible.findIndex(song => songKey(song) === sharedKey);
-        if (sharedIndex > 0) {
-          const sharedSong = visible.splice(sharedIndex, 1)[0];
-          visible.unshift(sharedSong);
-        }
-      }
+      const visible = activeCategory === '全部' ? songs : songs.filter(song => song.category === activeCategory);
       visible.forEach(song => listEl.appendChild(buildCard(song)));
       statusEl.hidden = visible.length > 0;
       statusEl.textContent = visible.length ? '' : '当前分类暂无歌曲';
@@ -470,15 +435,14 @@
           .sort((a, b) => (Number(b.weight) || 0) - (Number(a.weight) || 0) || a._index - b._index);
         renderFilters();
         renderSongs();
-        locateSharedSong();
+        locateSongFromHash();
       })
       .catch(error => {
         statusEl.hidden = false;
         statusEl.textContent = `歌曲加载失败：${error.message}`;
       });
 
-    window.addEventListener('hashchange', locateSharedSong);
-    window.addEventListener('popstate', locateSharedSong);
+    window.addEventListener('hashchange', locateSongFromHash);
   </script>
 </body>
 </html>

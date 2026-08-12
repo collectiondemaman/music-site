@@ -262,6 +262,8 @@
       if (!target) return;
       document.querySelectorAll('.song-card.link-target').forEach(card => card.classList.remove('link-target'));
       target.classList.add('link-target');
+      requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'center' }));
+      window.setTimeout(() => target.classList.remove('link-target'), 2600);
     }
 
     function openShare(song) {
@@ -429,15 +431,7 @@
       currentAudio = null;
       currentCard = null;
       listEl.replaceChildren();
-      let visible = activeCategory === '全部' ? [...songs] : songs.filter(song => song.category === activeCategory);
-      const sharedKey = new URLSearchParams(window.location.search).get('song');
-      if (sharedKey && activeCategory === '全部') {
-        const sharedIndex = visible.findIndex(song => songKey(song) === sharedKey);
-        if (sharedIndex > 0) {
-          const sharedSong = visible.splice(sharedIndex, 1)[0];
-          visible.unshift(sharedSong);
-        }
-      }
+      const visible = activeCategory === '全部' ? songs : songs.filter(song => song.category === activeCategory);
       visible.forEach(song => listEl.appendChild(buildCard(song)));
       statusEl.hidden = visible.length > 0;
       statusEl.textContent = visible.length ? '' : '当前分类暂无歌曲';
