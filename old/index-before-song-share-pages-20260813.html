@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="老湛原创词曲作品目录">
   <title>老湛 · 原创词曲作品</title>
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="老湛 · 原创词曲作品">
-  <meta property="og:description" content="老湛原创词曲作品在线试听">
-  <meta property="og:image" content="https://miyaomusic.com/logo.png">
-  <meta property="og:url" content="https://miyaomusic.com/">
   <style>
     :root {
       --bg: #090806;
@@ -213,7 +208,12 @@
       return fileName.replace(/\.[^.]+$/, '') || String(song.title || 'song');
     };
     const songAnchor = song => `song-${encodeURIComponent(String(song.audio || song.title)).replace(/%/g, '')}`;
-    const songUrl = song => new URL(`song/${encodeURIComponent(songKey(song))}.html`, window.location.origin + '/').href;
+    const songUrl = song => {
+      const url = new URL(window.location.href);
+      url.searchParams.set('song', songKey(song));
+      url.hash = '';
+      return url.href;
+    };
 
     async function copyShareLink() {
       if (!shareData) return;
