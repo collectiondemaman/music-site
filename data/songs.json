@@ -223,5 +223,14 @@
     "desc": "",
     "weight": 80,
     "start_sec": 8
+  },
+  {
+    "title": "此刻",
+    "category": "流行",
+    "audio": "audio/cike.mp3",
+    "lyrics": "lyrics/cike.txt",
+    "desc": "",
+    "weight": 80,
+    "start_sec": 14
   }
 ]
