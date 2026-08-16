@@ -82,8 +82,7 @@ def share_page(song: dict) -> str:
 
 
 def main() -> None:
-    payload = json.loads(SONGS_FILE.read_text(encoding="utf-8-sig"))
-    songs = payload.get("songs", []) if isinstance(payload, dict) else payload
+    songs = json.loads(SONGS_FILE.read_text(encoding="utf-8"))
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     expected = set()
     for song in songs:

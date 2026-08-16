@@ -35,14 +35,6 @@
     }
     button, audio { font: inherit; }
     button { -webkit-tap-highlight-color: transparent; }
-    .page-refresh {
-      position: fixed; z-index: 40; top: max(10px, env(safe-area-inset-top)); right: 10px;
-      width: 40px; height: 40px; display: grid; place-items: center; padding: 0;
-      border: 1px solid rgba(255,255,255,.2); border-radius: 50%; color: #eee;
-      background: rgba(38,38,38,.92); box-shadow: 0 5px 18px rgba(0,0,0,.35);
-      cursor: pointer; font-size: 22px; line-height: 1;
-    }
-    .page-refresh:active { transform: rotate(45deg); }
     .wrap { width: min(960px, calc(100% - 28px)); margin: 0 auto; }
     header { padding: 18px 0 14px; text-align: center; border-bottom: 1px solid var(--line); }
     h1 { display: inline; margin: 0; color: var(--gold); font-size: 25px; letter-spacing: .12em; }
@@ -63,8 +55,6 @@
     }
     .filter-btn:hover, .filter-btn.active { color: #160c05; border-color: var(--orange); background: var(--orange); }
     #status { color: var(--muted); text-align: center; padding: 30px 0; }
-    #status.load-error { margin: 18px 0; padding: 22px 16px; border: 1px solid rgba(240,120,34,.55); border-radius: 14px; color: #ead8c0; background: rgba(240,120,34,.08); }
-    .retry-btn { display: inline-block; margin-top: 12px; padding: 8px 17px; border: 1px solid var(--orange); border-radius: 999px; color: #160c05; background: var(--orange); cursor: pointer; font-weight: 700; }
     .song-list { display: grid; gap: 9px; }
     .song-card {
       border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(29,22,14,.95), rgba(14,12,9,.95));
@@ -139,7 +129,6 @@
   </style>
 </head>
 <body>
-  <button class="page-refresh" id="pageRefresh" type="button" aria-label="刷新页面" title="刷新页面">↻</button>
   <header>
     <div class="wrap">
       <div><h1>老湛</h1><p class="subtitle">原创词曲</p></div>
@@ -155,7 +144,6 @@
   <main class="wrap">
     <nav class="filters" id="filters" aria-label="歌曲分类"></nav>
     <p id="status">歌曲加载中…</p>
-    <noscript><p class="load-error">页面脚本未能运行，请开启JavaScript后刷新页面。</p></noscript>
     <section class="song-list" id="songList" aria-live="polite"></section>
 
     <section class="copyright" aria-labelledby="copyright-title">
@@ -208,21 +196,12 @@
     const nowTitleEl = document.querySelector('#nowTitle');
     const nowLabelEl = document.querySelector('#nowLabel');
     const nowCloseEl = document.querySelector('#nowClose');
-    const pageRefreshEl = document.querySelector('#pageRefresh');
     let songs = [];
     let activeCategory = '全部';
     let shareData = null;
     let currentAudio = null;
     let currentCard = null;
     let nowDismissed = false;
-
-    function forceRefresh() {
-      const url = new URL(window.location.href);
-      url.searchParams.set('_refresh', Date.now().toString());
-      window.location.replace(url.href);
-    }
-
-    pageRefreshEl.addEventListener('click', forceRefresh);
 
     const escapeHtml = (value = '') => String(value).replace(/[&<>'"]/g, char => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
@@ -514,36 +493,13 @@
       }));
     }
 
-    function showLoadError(message) {
-      statusEl.hidden = false;
-      statusEl.className = 'load-error';
-      statusEl.innerHTML = `歌曲加载失败，请检查网络后重试。<br><small>${escapeHtml(message)}</small><br><button class="retry-btn" type="button">点击重试</button>`;
-      statusEl.querySelector('.retry-btn').addEventListener('click', () => loadSongs(0));
-    }
-
-    async function fetchSongsOnce() {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
-      try {
-        const url = new URL('data/songs.json', window.location.href);
-        url.searchParams.set('v', Date.now().toString());
-        const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
-        if (!res.ok) throw new Error(`服务器返回 HTTP ${res.status}`);
-        return await res.json();
-      } finally {
-        clearTimeout(timeout);
-      }
-    }
-
-    async function loadSongs(attempt = 0) {
-      statusEl.hidden = false;
-      statusEl.className = '';
-      statusEl.textContent = attempt ? '首次加载失败，正在自动重试…' : '歌曲加载中…';
-      try {
-        const payload = await fetchSongsOnce();
-        const data = Array.isArray(payload) ? payload : payload && payload.songs;
+    fetch('data/songs.json', { cache: 'no-store' })
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
         if (!Array.isArray(data)) throw new Error('歌曲数据格式不正确');
-        if (payload && payload.version) document.documentElement.dataset.songsVersion = payload.version;
         const audioBase = 'https://audio.miyaomusic.com/audio/';
         songs = data.map((song, index) => {
           const fileName = String(song.audio || '').split('/').pop();
@@ -553,20 +509,11 @@
         renderFilters();
         renderSongs();
         locateSharedSong();
-      } catch (error) {
-        if (attempt < 1) {
-          setTimeout(() => loadSongs(attempt + 1), 900);
-        } else {
-          showLoadError(error.name === 'AbortError' ? '连接超时' : error.message);
-        }
-      }
-    }
-
-    loadSongs();
-
-    window.addEventListener('unhandledrejection', event => {
-      if (!listEl.children.length) showLoadError(event.reason?.message || '页面运行异常');
-    });
+      })
+      .catch(error => {
+        statusEl.hidden = false;
+        statusEl.textContent = `歌曲加载失败：${error.message}`;
+      });
 
     window.addEventListener('hashchange', locateSharedSong);
     window.addEventListener('popstate', locateSharedSong);
