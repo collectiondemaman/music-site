@@ -1,5 +1,5 @@
 import {uid,analyze,seed,LocalRepository,validate,makeFragments,generate,dna,relations,skeletons,mergeBackup} from './core.js';
-import {analyzeWork,workMaterials,corpusProfile,retrieveWorks} from './works.js';
+import {analyzeWork,workMaterials,corpusProfile,retrieveWorks} from './works.js?v=0.2.1';
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const repo=new LocalRepository(localStorage);let data,loadError='';try{data=repo.load()}catch(e){loadError=e.message;data={version:1,materials:[],sessions:[],feedback:[]}}
 let page='create',tab='句子',search='',filter='全部',selected=new Set(),draft={theme:'离开以后',mood:'克制'},pending=null,session=null,useWorks=true,workSearch='';
