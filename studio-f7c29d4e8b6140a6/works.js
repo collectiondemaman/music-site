@@ -1,13 +1,16 @@
 import { analyze } from './core.js';
 
 // Full works stay local. This is an inspectable corpus analysis, not model training.
-export function analyzeWork(text) {
+export function analyzeWork(text, title = '') {
   const sections = [];
   let current = null;
-  const heading = /^(?:[\[【（(](.{1,40})[\]】）)]|((?:主歌|副歌|桥段|间奏|前奏|尾声|预副歌|Verse|Chorus|Bridge|Intro|Outro|Pre[- ]?Chorus)\s*[A-Z\d一二三四]*))\s*[:：]?$/i;
+  const heading = /^(?:[\[【（(](.{1,60})[\]】）)]|((?:(?:final|guitar)\s+)?(?:主歌|副歌|桥段|间奏|前奏|尾声|预副歌|Verse|Chorus|Bridge|Intro|Outro|Solo|Reprise|Final|Pre[- ]?Chorus)\s*[A-Z\d一二三四]*(?:\s*[（(].*?[）)])?))\s*[:：]?$/i;
+  let first = true;
   for (const raw of text.replace(/\r\n?/g, '\n').split('\n')) {
     const line = raw.trim();
     if (!line) { if (current?.lines.length) current = null; continue; }
+    if (/^(?:歌曲名|歌名)\s*[:：]/.test(line) || (first && (line === title || /^《[^》]+》$/.test(line)))) { first = false; continue; }
+    first = false;
     const label = line.match(heading);
     if (label) {
       current = { name: label[1] || label[2], lines: [] };
@@ -55,7 +58,7 @@ function learnLine(text) {
 
 export function workMaterials(works = [], enabledOnly = false) {
   return works.filter(w => !enabledOnly || w.enabled).flatMap(work => {
-    const unique = analyzeWork(work.text).uniqueLines;
+    const unique = analyzeWork(work.text, work.title).uniqueLines;
     return unique.map((text, index) => ({
       id: `${work.id}_line_${index}`, workId: work.id, workTitle: work.title,
       text, kind: '历史作品句子', source: `《${work.title}》${work.year ? ' · ' + work.year : ''}`,
@@ -66,7 +69,7 @@ export function workMaterials(works = [], enabledOnly = false) {
 
 export function corpusProfile(works = []) {
   const enabled = works.filter(w => w.enabled);
-  const analyses = enabled.map(w => analyzeWork(w.text));
+  const analyses = enabled.map(w => analyzeWork(w.text, w.title));
   const materials = workMaterials(enabled);
   const fragments = new Map(), relations = new Map();
   for (const m of materials) {

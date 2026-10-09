@@ -36,7 +36,7 @@ function corpusSummary(){
 
 function worksPage(){
   const works=(data.works||[]).filter(w=>(w.title+' '+w.text+' '+w.notes).includes(workSearch));
-  return `${corpusSummary()}<div class="toolbar"><input id="work-search" aria-label="搜索历史作品" placeholder="搜索标题、歌词或创作备注…" value="${esc(workSearch)}"></div><div class="grid work-list">${works.map(w=>{const a=analyzeWork(w.text);return `<article class="card"><div class="row between"><h2>${esc(w.title)}</h2><span class="chip">${w.enabled?'参与参考':'暂停参考'}</span></div><p class="meta">${esc(w.year||'未填写年份')} · ${a.sections.length} 段 · ${a.lineCount} 行 · ${a.repeated.length} 组重复句</p><p class="sub">${esc(w.notes)}</p><div class="work-body work-preview">${esc(a.sections[0]?.lines.slice(0,4).join('\n')||'')}</div><div class="row work-actions">${btn('查看全文与分析','work-view','small',`data-id="${w.id}"`)}${btn('编辑','work-edit','small',`data-id="${w.id}"`)}${btn(w.enabled?'暂停参考':'启用参考','work-toggle','small',`data-id="${w.id}"`)}${btn('删除','work-delete','small danger',`data-id="${w.id}"`)}</div></article>`}).join('')||'<section class="panel empty">还没有匹配的历史作品。<br>点击「录入整首作品」，粘贴一整首歌词即可开始。</section>'}</div>`;
+  return `${corpusSummary()}<div class="toolbar"><input id="work-search" aria-label="搜索历史作品" placeholder="搜索标题、歌词或创作备注…" value="${esc(workSearch)}"></div><div class="grid work-list">${works.map(w=>{const a=analyzeWork(w.text,w.title);return `<article class="card"><div class="row between"><h2>${esc(w.title)}</h2><span class="chip">${w.enabled?'参与参考':'暂停参考'}</span></div><p class="meta">${esc(w.year||'未填写年份')} · ${a.sections.length} 段 · ${a.lineCount} 行 · ${a.repeated.length} 组重复句</p><p class="sub">${esc(w.notes)}</p><div class="work-body work-preview">${esc(a.sections[0]?.lines.slice(0,4).join('\n')||'')}</div><div class="row work-actions">${btn('查看全文与分析','work-view','small',`data-id="${w.id}"`)}${btn('编辑','work-edit','small',`data-id="${w.id}"`)}${btn(w.enabled?'暂停参考':'启用参考','work-toggle','small',`data-id="${w.id}"`)}${btn('删除','work-delete','small danger',`data-id="${w.id}"`)}</div></article>`}).join('')||'<section class="panel empty">还没有匹配的历史作品。<br>点击「录入整首作品」，粘贴一整首歌词即可开始。</section>'}</div>`;
 }
 
 function workModal(id){
@@ -46,7 +46,7 @@ function workModal(id){
 
 function workView(id){
   const w=(data.works||[]).find(w=>w.id===id);if(!w)return;
-  const a=analyzeWork(w.text),lines=workMaterials([w]);
+  const a=analyzeWork(w.text,w.title),lines=workMaterials([w]);
   open(`<div class="row between"><h2>${esc(w.title)}</h2>${btn('✕','close','small','aria-label="关闭"')}</div><p class="sub">${a.sections.length} 段 · ${a.lineCount} 行 · 平均 ${a.averageLength} 字 / 行</p><h3>完整原文</h3><div class="work-body work-preview">${esc(w.text)}</div><h3>段落与重复结构</h3><div class="chips">${a.sections.map(s=>chip(s.name,s.lines.length+' 行')).join('')}</div>${a.repeated.length?a.repeated.map(r=>`<p class="sub">「${esc(r.text)}」重复 ${r.count} 次</p>`).join(''):'<p class="meta">未发现完全相同的重复句。</p>'}<h3>提取到的原句骨架</h3>${lines.filter(m=>m.analysis.skeleton).slice(0,12).map(m=>`<div class="work-sections"><p class="meta">${esc(m.text)}</p><div>${esc(m.analysis.skeleton)}</div></div>`).join('')||'<p class="sub">现有词表不足以可靠提取句法，已保留原文和分词。你可以在素材库把句子收为独立素材，再手动校正拆解。</p>'}<p class="meta">这里只预览最多 12 条，完整句子与碎片可在素材库浏览。</p><div class="row">${btn('编辑这首作品','work-edit','primary',`data-id="${w.id}"`)}${btn('关闭','close')}</div>`);
 }
 
@@ -79,7 +79,7 @@ document.addEventListener('submit',e=>{
   if(e.target.id!=='work-form')return;e.preventDefault();
   const title=$('#work-title').value.trim(),text=$('#work-text').value.trim();
   if(!title||!text){toast('请填写标题与完整歌词');return;}
-  const analysis=analyzeWork(text);
+  const analysis=analyzeWork(text,title);
   if(!analysis.lineCount){toast('请在段落标题下面加入歌词正文');return;}
   const old=(data.works||[]).find(w=>w.id===e.target.dataset.id);
   const normalize=t=>t.replace(/\s/g,'');
